@@ -1,0 +1,65 @@
+@charset "utf-8";
+
+/* 테이블 행 테두리 - Table Row Border */
+
+.tbl_border {
+  border-collapse: collapse; 
+}
+
+.tbl_border th,
+.tbl_border td {
+  border: 1px solid var(--light-blue-gray);
+}
+
+.tbl_border tbody tr {
+  border: 1px solid var(--light-blue-gray);
+}
+
+/*school staff*/
+.detail_noti{
+  display: flex;
+  justify-content: space-between;
+}
+.detail_noti > div > h2 {
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1em;
+  letter-spacing: 1.25px;
+  text-align: left;
+}
+.detail_span {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1em;
+  letter-spacing: 1.25px;
+  text-align: left;
+}
+.detail_noti_view{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1em;
+  letter-spacing: 1.25px;
+}
+.detail_noti_content{
+  min-height: 300px;
+}
+.detail_noti_icon{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  gap:4px;
+}
+.detail_noti_icon > span {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--light2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
