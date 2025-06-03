@@ -1,10 +1,6 @@
 import {SCREEN} from './screen';
 import authMiddleware from '@/middleware/auth';
 import logMiddleware from '@/middleware/log'
-import { developRoute } from './routeItems/developRoute';
-import { fqaRoute } from './routeItems/fqaRoute';
-import { promotionRoute } from './routeItems/promotionRoute';
-import { accountCreationRoute } from './routeItems/accountCreationRoute';
 import {storeManagerRoute} from "@/router/routeItems/storeManagerRoute";
 
 const getView = (path: any) => {
@@ -34,10 +30,6 @@ export const routes = [
         meta: {title: 'TemplateUi'},
         component: getView('TemplateUiYeongsang'),
       },
-      ...getRouteItems(developRoute),
-      ...getRouteItems(fqaRoute),
-      ...getRouteItems(promotionRoute),
-      ...getRouteItems(accountCreationRoute),
       ...getRouteItems(storeManagerRoute),
     ],
   },

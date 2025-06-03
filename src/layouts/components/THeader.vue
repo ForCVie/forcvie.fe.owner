@@ -62,10 +62,14 @@
             <img src="@/assets/images/logo.png" alt="영산대학교" />
           </router-link>
         </h1>
-        <!-- <div class="header_function">
-          <p class="login_info">{{ userInfo?.userName }} {{userInfo?.lastLoginDate && `[${userInfo?.lastLoginDate}]`}}</p>
-          <button type="button" class="btn_logout" @click="logout">로그아웃</button>
-        </div> -->
+        <div class="header_function">
+          <p class="login_info">Nguyễn Quốc Huy    </p>
+          
+  <div :style="{ width: `40px`, position: 'relative' }" class="transition_light avatar" href="javascript:void(0)">
+    <img class="wd_p100" :src="'https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://fdczvxmwwjwpwbeeqcth.supabase.co/storage/v1/object/public/images/076956f7-2972-485e-b6ce-2dff9d0e0410/8727b7ec-a53c-4f23-9832-ef445981e0b4.png'" alt="Avatar" />
+
+  </div>
+        </div>
       </div>
     </div>
 
@@ -258,3 +262,15 @@ const logout = () => {
 //   if (screenName) router.push({name: screenName})
 // }
 </script>
+
+<style>
+.header_icon_arrow_down {
+    background-image: url(@/assets/images/icon_arrow_down.png);
+    background-size: cover;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    bottom: 0px;
+    z-index: 9;
+}
+</style>

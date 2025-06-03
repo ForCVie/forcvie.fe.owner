@@ -244,18 +244,6 @@ html:has(body.on) .header_wrap {
   font-size: 1.2rem; font-weight: 500;
   width: auto; height: 36px;
 }
-.header_function .btn_logout::before, .header_function .btn_login::before {
-  content: "";
-  display: inline-block;
-  margin-right: 2px;
-  width: 34px; height: 34px;
-}
-.header_function .btn_logout::before {
-  background: url(../../images/common/icon_logout.svg) no-repeat center;
-}
-.header_function .btn_login::before {
-  background: url(../../images/common/icon_login.svg) no-repeat center;
-}
 
 .login_info {
   position: relative;

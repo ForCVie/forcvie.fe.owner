@@ -1,0 +1,126 @@
+.voucher-card {
+  display: flex;
+  /* width: 320px; */
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.voucher-discount {
+    border: 2px dashed #57a2f7;
+}
+
+.voucher-discount .left {
+    background-color: #57a2f7;
+}
+
+.code-discount {
+    border: 2px dashed #ffa500;
+}
+
+.code-discount .left {
+    background-color: #ffa500;
+}
+
+.voucher-card .left {
+  color: #fff;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+}
+
+.transition_light {
+  position: relative;
+  overflow: hidden;
+}
+
+.transition_light::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: all 0.4s;
+}
+
+.transition_light:hover::before {
+  left: 100%;
+}
+
+.voucher-card .left h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.voucher-card .left span {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.voucher-card .right {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.voucher-card .right .details {
+  font-size: 14px;
+  color: #555;
+}
+
+.voucher-card .right .quantity {
+  font-size: 14px;
+  color: #555;
+  margin-top: 8px;
+}
+
+.voucher-card .right .expiry {
+  font-size: 12px;
+  color: #888;
+  margin-top: 8px;
+}
+
+.voucher-card .right .button_vourcher {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.voucher-card .right .button_vourcher button {
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.code-discount .right .button_vourcher button:hover {
+  background-color: #ff8c00;
+}
+
+.code-discount .right .button_vourcher button {
+    background-color: #ffa500;
+}
+
+.voucher-discount .right .button_vourcher button {
+    background-color: #57a2f7;
+}
+
+.voucher-discount .right .button_vourcher button:hover {
+  background-color: #3e74b1;
+}
