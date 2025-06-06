@@ -1,4 +1,5 @@
-.dropdown {
+.dropdown,
+.dropdown_v1 {
   position: relative;
   display: inline-block;
 }
@@ -30,6 +31,7 @@
     opacity 0.3s ease,
     transform 0.3s ease,
     visibility 0.3s;
+    right: 0;
 }
 .dropdown-content .dropdown-item {
   color: #333;
@@ -42,6 +44,12 @@
   background-color: #f1f1f1;
 }
 .dropdown:hover .dropdown-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown_select .dropdown-content {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);

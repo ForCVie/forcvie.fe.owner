@@ -3,17 +3,16 @@
     <div class="header_top">
       <button
         @click="openDrawer"
+        class="mg_l30"
         style="
-          position: absolute;
-          left: 10px;
-          width: 50px;
-          height: 50px;
-          z-index: 10;
+          width: 25px;
+          height: 25px;
+          padding: 0;
         "
       >
         <svg
-          width="800px"
-          height="800px"
+          width="25px"
+          height="25px"
           viewBox="0 0 20.00 20.00"
           version="1.1"
           xmlns="http://www.w3.org/2000/svg"
@@ -62,15 +61,32 @@
             <img src="@/assets/images/logo.png" alt="영산대학교" />
           </router-link>
         </h1>
-        <div class="header_function">
-          <p class="login_info">Nguyễn Quốc Huy    </p>
-          
-  <div :style="{ width: `40px`, position: 'relative' }" class="transition_light avatar" href="javascript:void(0)">
-    <img class="wd_p100" :src="'https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://fdczvxmwwjwpwbeeqcth.supabase.co/storage/v1/object/public/images/076956f7-2972-485e-b6ce-2dff9d0e0410/8727b7ec-a53c-4f23-9832-ef445981e0b4.png'" alt="Avatar" />
-
-  </div>
-        </div>
       </div>
+        <div class="header_function mg_r30">
+          <p class="login_info">Nguyễn Quốc Huy</p>
+          <div
+            class="dropdown_v1"
+            :class="isHeaderOpen ? 'dropdown_select' : ''"
+          >
+            <div
+              :style="{ width: `45px`, position: 'relative' }"
+              class="transition_light avatar"
+              v-on:click="changeHeaderSelect"
+            >
+              <img
+                class="wd_p100"
+                :src="'https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://fdczvxmwwjwpwbeeqcth.supabase.co/storage/v1/object/public/images/076956f7-2972-485e-b6ce-2dff9d0e0410/8727b7ec-a53c-4f23-9832-ef445981e0b4.png'"
+                alt="Avatar"
+              />
+            </div>
+            <div class="dropdown-content">
+              <a class="dropdown-item" href="#">Thông tin cá nhân</a>
+              <a class="dropdown-item" href="#">Đổi quyền điều khiển</a>
+              <a class="dropdown-item" href="#">Cài đặt</a>
+              <a class="dropdown-item" href="#">Đăng xuất</a>
+            </div>
+          </div>
+        </div>
     </div>
 
     <Drawer :position="'left'" :isOpen="isDrawerOpen" @close="closeDrawer">
@@ -81,7 +97,7 @@
           </router-link>
         </h1>
       </div>
-      <hr/>
+      <hr />
       <TNavTree v-if="menuData.length > 0" :menu-items="menuData" />
     </Drawer>
     <!-- <div class="header_bottom">
@@ -140,6 +156,12 @@ const isLoading = ref(false);
 const userInfo = ref<Object | null>(null);
 
 const isDrawerOpen = ref(false);
+
+const isHeaderOpen = ref(false);
+
+const changeHeaderSelect = () => {
+  isHeaderOpen.value = !isHeaderOpen.value;
+};
 
 const openDrawer = () => {
   isDrawerOpen.value = true;
@@ -265,12 +287,12 @@ const logout = () => {
 
 <style>
 .header_icon_arrow_down {
-    background-image: url(@/assets/images/icon_arrow_down.png);
-    background-size: cover;
-    width: 40px;
-    height: 40px;
-    position: absolute;
-    bottom: 0px;
-    z-index: 9;
+  background-image: url(@/assets/images/icon_arrow_down.png);
+  background-size: cover;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  bottom: 0px;
+  z-index: 9;
 }
 </style>

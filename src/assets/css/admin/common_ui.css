@@ -205,7 +205,8 @@ html:has(body.on) .header_wrap {
   height: 72px;
   align-items: center; justify-content: center;
   text-align: center;
-  border-bottom: 1px solid var(--light1);
+  border-bottom: 1px solid var(--light1);    
+  /* margin: 0 15px; */
 }
 .header_top.border_bn {
   border-bottom: 1px solid transparent !important;
