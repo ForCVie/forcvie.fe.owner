@@ -9,4 +9,10 @@ export const storeManagerRoute = {
         name: "storeManagerForm",
         component: import("@/views/storeManager/storeManager/StoreManagerForm.vue"),
     },
+    storeManagerReview: {
+        path: "/store-manager/store-manager/review",
+        name: "storeManagerReview",
+        param: "",
+        component: import("@/views/storeManager/storeManager/StoreManagerReview.vue"),
+    },
 };

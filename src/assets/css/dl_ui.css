@@ -356,6 +356,7 @@ input, textarea {
     background-repeat: no-repeat;
     border: 1px solid var(--light-blue-gray);
     border-radius: 4px !important;
+    color: var(--tb-text--color);
 }
 
 input {

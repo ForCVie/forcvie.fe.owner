@@ -2,6 +2,7 @@
   <div class="content_wrap">
     <div id="content" class="grid_content" tabindex="0">
       <div class="box dp_block">
+        <h3 class="box_title_sm">THÔNG TIN CƠ BẢN</h3>
         <div class="box_section company_overview dp_flex">
           <div class="wd_200">
             <div class="img_wrap">
@@ -11,103 +12,116 @@
               />
             </div>
           </div>
-          <div class="mg_l40">
+          <div class="mg_l40 wd_p100">
             <div class="box_section">
-              <div class="section_tit_wrap">
-                <h3 class="section_tit_md">Cửa Hàng Top 1 Vn 관리자</h3>
-              </div>
-              <div class="search_box col_2">
-                <ul class="form_info">
-                  <li>
-                    <p>Mã Cửa Hàng</p>
-                    <span>ST943jk4324</span>
-                  </li>
-                  <li>
-                    <p>Số điện thoại</p>
-                    <span>0328843156</span>
-                  </li>
-                  <li>
-                    <p>Email</p>
-                    <span>nguyenquochuy@gmail.com</span>
-                  </li>
-                  <li>
-                    <p>SNS</p>
-                    <span>
-                      <div class="company_sns">
-                        <ul>
-                          <li
-                            class="f14"
-                            v-tooltip="'https://www.instagram.com/hyundai'"
-                          >
-                            <a href="https://www.instagram.com/hyundai"
-                              ><i class="insta"></i
-                            ></a>
-                          </li>
-                          <li
-                            class="f14"
-                            v-tooltip="'https://www.instagram.com/hyundai'"
-                          >
-                            <a href="javascript:void()"
-                              ><i class="youtube"></i
-                            ></a>
-                          </li>
-                          <li class="f14 not_exits" v-tooltip="'Chưa Cấu Hình'">
-                            <i class="facebook"></i>
-                          </li>
-                          <li class="f14 not_exits" v-tooltip="'Chưa Cấu Hình'">
-                            <i class="tiktok"></i>
-                          </li>
-                        </ul>
+              <table class="tbl_row">
+                <colgroup>
+                  <col style="width: 24%" />
+                  <col style="width: auto" />
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <th scope="row">Mã cửa hàng</th>
+                    <td class="td_input">
+                      <InputBase readonly />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="required">Tên cửa hàng</th>
+                    <td>
+                      <InputBase />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Chủ cửa hàng (Số - Tên)</th>
+                    <td class="td_input">
+                      <div class="dp_flex al_center">
+                        <InputBase readonly :value="'03288423156'" />
+                        <span class="mg_l10 mg_r10"> - </span>
+                        <InputBase readonly :value="'Nguyễn Quốc Huy'" />
                       </div>
-                    </span>
-                  </li>
-                  <li>
-                    <p>Chủ cửa hàng</p>
-                    <span
-                      ><a href="https://www.instagram.com/hyundai"
-                        >Nguyễn Quốc Huy</a
-                      ></span
-                    >
-                  </li>
-                  <li>
-                    <p>Địa Chỉ</p>
-                    <span
-                      >123 Phố BAB, Phường BDCM HSnm, Quận Hai Bà Trưng, TP Hà
-                      Nội</span
-                    >
-                  </li>
-                </ul>
-              </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="required">Liên hệ (Số - Tên)</th>
+                    <td class="td_input">
+                      <div class="dp_flex al_center">
+                        <InputBase />
+                        <span class="mg_l10 mg_r10"> - </span>
+                        <InputBase />
+                      </div>
+                      <CheckboxBase :label="'Hiển thị'" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="required">
+                      Địa chỉ <br />
+                      (Tỉnh/TP - Quận/Huyện - Xã/Phường)
+                    </th>
+                    <td>
+                      <div class="dp_flex al_center">
+                        <SelectBoxBase />
+                        <span class="mg_l10 mg_r10"> - </span>
+                        <SelectBoxBase />
+                        <span class="mg_l10 mg_r10"> - </span>
+                        <SelectBoxBase />
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                      SNS <br />
+                      (Instagram - Youtobe - Facebook - Tiktok)
+                    </th>
+                    <td>
+                      <div class="dp_flex al_center">
+                        <InputBase />
+                        <span class="mg_l10 mg_r10"> - </span>
+                        <InputBase />
+                        <span class="mg_l10 mg_r10"> - </span>
+                        <InputBase />
+                        <span class="mg_l10 mg_r10"> - </span>
+                        <InputBase />
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="required">
+                      Giấy phép an toàn vệ sinh thực phẩm
+                    </th>
+                    <td>
+                      <InputFileBase />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="required">Địa chỉ chi tiết</th>
+                    <td><TextArea /></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Ghi Chú</th>
+                    <td><TextArea /></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="divide_box">
-        <div class="box">
-          <h3 class="box_title">DIVIDE BOX TITLE</h3>
-          <p>box 외 영역 2개로 나눌때</p>
-        </div>
-        <div class="box">
-          <h3 class="box_title">DIVIDE BOX TITLE</h3>
-          <p>box 외 영역 2개로 나눌때</p>
-        </div>
-        <div class="box">
-          <h3 class="box_title">DIVIDE BOX TITLE</h3>
-          <p>box 외 영역 2개로 나눌때</p>
-        </div>
-        <div class="box">
-          <h3 class="box_title">DIVIDE BOX TITLE</h3>
-          <p>box 외 영역 2개로 나눌때</p>
-        </div>
+      <div class="box dp_block">
+        <h3 class="box_title">THỂ LOẠI CỬA HÀNG</h3>
+        <p>box 외 영역 2개로 나눌때</p>
       </div>
-
-
+      <div class="box dp_block">
+        <h3 class="box_title">TỪ KHÓA TÌM KIẾM</h3>
+        <p>box 외 영역 2개로 나눌때</p>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import SelectBoxBase from "@/components/common/input/SelectBoxBase.vue";
+</script>
 
 <style scoped>
 .company_overview .img_wrap {
