@@ -108,12 +108,31 @@
         </div>
       </div>
       <div class="box dp_block">
-        <h3 class="box_title">THỂ LOẠI CỬA HÀNG</h3>
-        <p>box 외 영역 2개로 나눌때</p>
+            <div class="box_inner">
+              <h3 class="box_title">THỂ LOẠI CỬA HÀNG</h3>
+              <div class="box_title_funtion">
+                <a href="javascript:void(0);">Thêm thể loại</a>
+              </div>
+            </div>
+        <p><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /></p>
       </div>
       <div class="box dp_block">
-        <h3 class="box_title">TỪ KHÓA TÌM KIẾM</h3>
-        <p>box 외 영역 2개로 나눌때</p>
+            <div class="box_inner">
+              <h3 class="box_title">TỪ KHÓA TÌM KIẾM</h3>
+              <div class="box_title_funtion">
+                <a href="javascript:void(0);">Thêm từ khóa</a>
+              </div>
+            </div>
+        <p><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /></p>
+      </div>
+      <div class="box dp_block">
+            <div class="box_inner">
+              <h3 class="box_title">CÁC CHỨNG CHỈ/ GIẢI THƯỞNG</h3>
+              <div class="box_title_funtion">
+                <a href="javascript:void(0);">Thêm giấy tờ</a>
+              </div>
+            </div>
+        <p><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /><Tags :label="'Loại 1'" :color="'yellow'" /></p>
       </div>
     </div>
   </div>
@@ -121,6 +140,7 @@
 
 <script setup lang="ts">
 import SelectBoxBase from "@/components/common/input/SelectBoxBase.vue";
+import Tags from "@/components/common/tags/Tags.vue";
 </script>
 
 <style scoped>
