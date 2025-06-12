@@ -23,7 +23,6 @@
 <script lang="ts">
 import { defineComponent, ref, onBeforeMount, nextTick } from 'vue';
 import { format } from 'date-fns';
-import { randomUUID } from 'crypto';
 
 export default defineComponent({
   props: {
