@@ -7,7 +7,9 @@
       <div class="content_wrap">
         <div id="content" class="grid_content" tabindex="0">
           <Breadcrumb :pageTitle="pageTitle" :breadcrumbItems="breadcrumbItems"></Breadcrumb>
-
+          <div class="box">
+            <TableService />
+          </div>
           <MenuItem 
             :items="menuItemList"
             :listData="menuItemList"
@@ -2047,6 +2049,7 @@ import TModalQR from '@/components/common/modal/TModalQR.vue'
 import VueSelect from "@/components/common/vueSelect/VueSelect.vue";
 import RadioButtonGrid from '@/components/common/grid/RadioButtonGrid.vue'
 import MenuItem from '@/components/common/menuItem/MenuItem.vue'
+import TableService from '@/components/common/tableService/TableService.vue'
 
 export default defineComponent({
   data() {
@@ -2531,7 +2534,8 @@ export default defineComponent({
     InputBase,
     Breadcrumb,
     LinkGridComponent,
-    TModalQR
+    TModalQR,
+    TableService
   },
   beforeMount() {
     let arr = []
