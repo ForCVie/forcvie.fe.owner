@@ -1,44 +1,47 @@
 <template>
-  <table class="square-table">
-    <tbody>
-      <tr v-for="(rowIndex) in rows" :key="rowIndex">
-        <td v-for="(colIndex) in cols" :key="colIndex">
-          <div class="cell-content">
-            <div class="circle">+</div>
-            <div class="table-name">Bàn {{ getIndex(rowIndex, colIndex) }}</div>
-            <div class="table-desc">Mô tả {{ getIndex(rowIndex, colIndex) }}</div>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="grid-container">
+    <div
+      v-for="index in totalSeats"
+      :key="index"
+      class="grid-item"
+    >
+      <div class="cell-content">
+        <div class="circle" v-if="index == totalSeats">+</div>
+        <div v-if="index != totalSeats" class="table-name">Bàn {{ index }}</div>
+        <div v-if="index != totalSeats" class="table-desc">Mô tả {{ index }}</div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-const rows = 3;
-const cols = 4;
-
-function getIndex(row, col) {
-  return (row - 1) * cols + col;
-}
+const totalSeats = 12;
 </script>
 
 <style scoped>
-.square-table {
-  border-collapse: collapse;
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 4 cột, có thể đổi nếu muốn */
+  gap: 10px;
+  width: 100%;
 }
 
-.square-table td {
-  width: 60px;
-  height: 60px;
+.grid-item {
+  min-height: 100px;
   border: 1px solid #999;
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  vertical-align: middle;
-  padding: 0;
+  padding: 4px;
 }
 
-/* Vòng tròn ở giữa ô */
+.cell-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .circle {
   width: 30px;
   height: 30px;
@@ -48,7 +51,6 @@ function getIndex(row, col) {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: auto;
   font-size: 20px;
   font-weight: bold;
   cursor: pointer;
@@ -56,18 +58,17 @@ function getIndex(row, col) {
 }
 
 .circle:hover {
-  opacity: .8;
+  opacity: 0.8;
 }
 
 .table-name {
   font-weight: 600;
   font-size: 14px;
-  text-align: center;
+  margin-top: 4px;
 }
 
 .table-desc {
   font-size: 12px;
   color: #666;
-  text-align: center;
 }
 </style>
