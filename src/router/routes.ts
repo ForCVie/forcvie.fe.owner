@@ -2,6 +2,7 @@ import {SCREEN} from './screen';
 import authMiddleware from '@/middleware/auth';
 import logMiddleware from '@/middleware/log'
 import {storeManagerRoute} from "@/router/routeItems/storeManagerRoute";
+import { storeOrderRoute } from './storeOrder/storeOrderRoute';
 
 const getView = (path: any) => {
   return () => import(`@/views/${path}.vue`);
@@ -31,6 +32,7 @@ export const routes = [
         component: getView('TemplateUiYeongsang'),
       },
       ...getRouteItems(storeManagerRoute),
+      ...getRouteItems(storeOrderRoute),
     ],
   },
   // {

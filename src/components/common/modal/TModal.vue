@@ -7,7 +7,7 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
   >
-    <div class="overlay_popup" v-if="isOpen" >
+    <div class="overlay_popup" v-show="isOpen" >
       <div class="overlay_bg" :class="isOpen ? 'on' : ''" @click="closeModal"></div>
       <Transition
           enter-active-class="transition ease-out duration-200 transform"
