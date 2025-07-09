@@ -1,22 +1,36 @@
 <template>
   <section id="content" class="content_wrapper grid_content" tabindex="0">
-      <div v-for="(floor, index) in floors" :key="index" class="box dp_block floor">
-        <div class="box_inner">
-          <h3 class="box_title">{{ floor.name }}</h3>
-        </div>
-        <div class="grid">
-          <div
-            v-for="table in floor.tables"
-            :key="table.id"
-            class="table"
-            :class="table.status"
-            @click="openModal(0)"
-          >
-            <div class="table-number">{{ table.name }}</div>
-            <!-- <div class="table-desc">{{ table.desc }}</div> -->
-          </div>
+    <div class="box dp_block pd_0">
+          <CollapseBase :isShow="openCollapse" :title="'Tìm kiếm nhanh'" :isCheck="true"
+              :onClick="() => {openCollapse = !openCollapse}">
+            <div class="search_box col_3">
+
+            </div>
+          </CollapseBase>
+      <div class="box_section">
+        <div class="radio_tab_lg_wrap">
+          <p class="radio_tab_lg" v-for="(status, index) in listStatus">
+            <input type="radio" :id="`searchFormStatus_${index}`" name="radio" v-model="searchModel.statusOrder" :value="status.cdId" />
+            <label :for="`searchFormStatus_${index}`">
+              <Badge :count="100" :max="-1"> {{ status.cdNm }} </Badge>
+            </label>
+          </p>
         </div>
       </div>
+    </div>
+    
+
+    <div v-for="(floor, index) in floors" :key="index" class="box dp_block floor">
+      <div class="box_inner">
+        <h3 class="box_title">{{ floor.name }}</h3>
+      </div>
+      <div class="grid">
+        <div v-for="table in floor.tables" :key="table.id" class="table" :class="table.status" @click="openModal(0)">
+          <div class="table-number">{{ table.name }}</div>
+          <!-- <div class="table-desc">{{ table.desc }}</div> -->
+        </div>
+      </div>
+    </div>
   </section>
   <TModal :is-open="modalOpen[0]" :is-show-header="true" :is-show-footer="true" @close-modal="closeModal(0)">
     <template #title>
@@ -26,49 +40,83 @@
       <h1>fdfasd</h1>
     </template>
     <template #footer>
-      <button type="button" class="button btn_xl btn_white popup_close " @click="confirmAction">
+      <button type="button" class="button btn_xl btn_white popup_close" @click="confirmAction">
         닫기
       </button>
-      <button type="button" class="button btn_xl btn_blue  " @click="cancelAction">확인
+      <button type="button" class="button btn_xl btn_blue" @click="cancelAction">
+        확인
       </button>
     </template>
   </TModal>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import Badge from "@/components/common/badge/Badge.vue";
+import { CodeMngModel } from "@/stores/common/codeMng/codeMng.type";
+import { ref } from "vue";
 
 const floors = ref([
   {
-    name: 'Tầng 1',
+    name: "Tầng 1",
     tables: createTables(1, 50),
   },
   {
-    name: 'Tầng 2',
+    name: "Tầng 2",
     tables: createTables(101, 50),
   },
 ]);
 const modalOpen = ref([false]);
+const searchModel = ref({
+  statusOrder: ""
+});
+const openCollapse = ref(false);
+const listStatus = ref<CodeMngModel[]>([
+  {
+    cdId: "",
+    cdNm: "Tất Cả",
+    upCdId: ""
+  },
+  {
+    cdId: "1",
+    cdNm: "Có khách",
+    upCdId: ""
+  },
+  {
+    cdId: "2",
+    cdNm: "Còn Trống",
+    upCdId: ""
+  },
+  {
+    cdId: "3",
+    cdNm: "Dọn bàn",
+    upCdId: ""
+  },
+  {
+    cdId: "4",
+    cdNm: "Đặt trước",
+    upCdId: ""
+  },
+])
 
-function createTables(startId:number, count:number) {
+function createTables(startId: number, count: number) {
   const tables = [];
   for (let i = 0; i < count; i++) {
     tables.push({
       id: startId + i,
       name: `Bàn ${i + 1}`,
       desc: `Mô tả ${i + 1}`,
-      status: i % 3 === 0 ? 'occupied' : i % 3 === 1 ? 'reserved' : 'available'
+      status: i % 3 === 0 ? "occupied" : i % 3 === 1 ? "reserved" : "available",
     });
   }
   return tables;
 }
 
 const openModal = (index: number) => {
-  modalOpen.value[index] = true
-}
+  modalOpen.value[index] = true;
+};
 const closeModal = (index: number) => {
-  modalOpen.value[index] = false
-}
+  modalOpen.value[index] = false;
+};
 </script>
 <style scoped>
 .grid {
@@ -77,6 +125,7 @@ const closeModal = (index: number) => {
   gap: 12px;
   margin-top: 10px;
 }
+
 .table {
   background: white;
   padding: 10px;
@@ -86,22 +135,39 @@ const closeModal = (index: number) => {
   border: 2px solid transparent;
   transition: 0.2s;
 }
+
 .table-number {
   font-weight: bold;
 }
+
 .table.available {
   border-color: green;
   background-color: #e6ffe6;
 }
+
 .table.occupied {
   border-color: red;
   background-color: #ffe6e6;
 }
+
 .table.reserved {
   border-color: orange;
   background-color: #fff6e6;
 }
+
 .table:hover {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.radio_tab_lg {
+  margin-right: 0;
+  flex: 1;
+}
+
+.radio_tab_lg label {
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 1em 0;
 }
 </style>
