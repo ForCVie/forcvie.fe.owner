@@ -1,16 +1,32 @@
 <template>
   <section id="content" class="content_wrapper grid_content" tabindex="0">
+      <CollapseBase :isShow="openCollapse" :title="'Tìm kiếm nhanh'" :isCheck="true" :onClick="() => {
+          openCollapse = !openCollapse;
+        }
+        ">
+        <div class="mt-4 search_box col_3">
+          <ul>
+            <li>
+              <p>Tiêu Đề</p>
+              <InputBase id="bannerNm" />
+            </li>
+            <li>
+              <p>URL</p>
+              <InputBase id="url" />
+            </li>
+            <li>
+              <p>Thể Loại</p>
+              <InputBase id="typeCd" />
+            </li>
+          </ul>
+        </div>
+      </CollapseBase>
     <div class="box dp_block pd_0">
-          <CollapseBase :isShow="openCollapse" :title="'Tìm kiếm nhanh'" :isCheck="true"
-              :onClick="() => {openCollapse = !openCollapse}">
-            <div class="search_box col_3">
-
-            </div>
-          </CollapseBase>
       <div class="box_section">
         <div class="radio_tab_lg_wrap">
           <p class="radio_tab_lg" v-for="(status, index) in listStatus">
-            <input type="radio" :id="`searchFormStatus_${index}`" name="radio" v-model="searchModel.statusOrder" :value="status.cdId" />
+            <input type="radio" :id="`searchFormStatus_${index}`" name="radio" v-model="searchModel.statusOrder"
+              :value="status.cdId" />
             <label :for="`searchFormStatus_${index}`">
               <Badge :count="100" :max="-1"> {{ status.cdNm }} </Badge>
             </label>
@@ -18,7 +34,6 @@
         </div>
       </div>
     </div>
-    
 
     <div v-for="(floor, index) in floors" :key="index" class="box dp_block floor">
       <div class="box_inner">
@@ -67,36 +82,36 @@ const floors = ref([
 ]);
 const modalOpen = ref([false]);
 const searchModel = ref({
-  statusOrder: ""
+  statusOrder: "",
 });
 const openCollapse = ref(false);
 const listStatus = ref<CodeMngModel[]>([
   {
     cdId: "",
     cdNm: "Tất Cả",
-    upCdId: ""
+    upCdId: "",
   },
   {
     cdId: "1",
     cdNm: "Có khách",
-    upCdId: ""
+    upCdId: "",
   },
   {
     cdId: "2",
     cdNm: "Còn Trống",
-    upCdId: ""
+    upCdId: "",
   },
   {
     cdId: "3",
     cdNm: "Dọn bàn",
-    upCdId: ""
+    upCdId: "",
   },
   {
     cdId: "4",
     cdNm: "Đặt trước",
-    upCdId: ""
+    upCdId: "",
   },
-])
+]);
 
 function createTables(startId: number, count: number) {
   const tables = [];
