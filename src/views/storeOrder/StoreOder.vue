@@ -1,26 +1,26 @@
 <template>
   <section id="content" class="content_wrapper grid_content" tabindex="0">
-      <CollapseBase :isShow="openCollapse" :title="'Tìm kiếm nhanh'" :isCheck="true" :onClick="() => {
-          openCollapse = !openCollapse;
-        }
-        ">
-        <div class="mt-4 search_box col_3">
-          <ul>
-            <li>
-              <p>Tiêu Đề</p>
-              <InputBase id="bannerNm" />
-            </li>
-            <li>
-              <p>URL</p>
-              <InputBase id="url" />
-            </li>
-            <li>
-              <p>Thể Loại</p>
-              <InputBase id="typeCd" />
-            </li>
-          </ul>
-        </div>
-      </CollapseBase>
+    <CollapseBase :isShow="openCollapse" :title="'Tìm kiếm nhanh'" :isCheck="true" :onClick="() => {
+      openCollapse = !openCollapse;
+    }
+      ">
+      <div class="mt-4 search_box col_3">
+        <ul>
+          <li>
+            <p>Tiêu Đề</p>
+            <InputBase id="bannerNm" />
+          </li>
+          <li>
+            <p>URL</p>
+            <InputBase id="url" />
+          </li>
+          <li>
+            <p>Thể Loại</p>
+            <InputBase id="typeCd" />
+          </li>
+        </ul>
+      </div>
+    </CollapseBase>
     <div class="box dp_block pd_0">
       <div class="box_section">
         <div class="radio_tab_lg_wrap">
@@ -55,10 +55,32 @@
       <h1>fdfasd</h1>
     </template>
     <template #footer>
-      <button type="button" class="button btn_xl btn_white popup_close" @click="confirmAction">
+      <button type="button" class="button btn_xl btn_white popup_close" @click="closeModal(0)">
         닫기
       </button>
-      <button type="button" class="button btn_xl btn_blue" @click="cancelAction">
+      <button type="button" class="button btn_xl btn_blue" @click="closeModal(0)">
+        확인
+      </button>
+    </template>
+  </TModal>
+  <TModal :size="'sm'" :is-open="modalOpen[1]" :is-show-header="true" :is-show-footer="true"
+    @close-modal="closeModal(1)">
+    <template #title>
+      <strong>Chọn Bàn ...</strong>
+    </template>
+    <template #default>
+      <div>
+        <div class="ta_c">
+          <QRCode :urlValue="'Hello fskajfhah dfsahfsadkjfh sdkajfhsad fhkasdfsjdafhsadjkfhsakjfhsdajkfhsad '" />
+        </div>
+        <span></span>
+      </div>
+    </template>
+    <template #footer>
+      <button type="button" class="button btn_xl btn_white popup_close" @click="closeModal(1)">
+        닫기
+      </button>
+      <button type="button" class="button btn_xl btn_blue" @click="closeModal(1)">
         확인
       </button>
     </template>
@@ -80,7 +102,7 @@ const floors = ref([
     tables: createTables(101, 50),
   },
 ]);
-const modalOpen = ref([false]);
+const modalOpen = ref([false, true]);
 const searchModel = ref({
   statusOrder: "",
 });

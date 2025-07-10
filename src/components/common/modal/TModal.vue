@@ -17,7 +17,7 @@
           leave-from-class="opacity-100"
           leave-to-class="opacity-0"
       >
-        <div class="popup_wrap" v-if="isOpen" :style="isQr ? 'max-width:600px;' :''" ref="modalContentRef">
+        <div class="popup_wrap" :class="[sizeClass]" v-if="isOpen" :style="isQr ? 'max-width:600px;' :''" ref="modalContentRef">
           <div class="popup_title" v-if="isShowHeader">
             <button type="button" class="popup_close" @click="closeModal">닫기</button>
             <h3>
@@ -60,9 +60,22 @@ export default {
     isQr : {
       type : Boolean,
       default : false
-    }
+    },
+    size: {
+      type: String,
+      default: 'xl', // 'sm' | 'md' | 'lg' | 'xl'
+      validator: (val: string) => ['sm', 'md', 'lg', 'xl'].includes(val),
+    },
   },
   setup(props, ctx) {
+    const sizeClass = computed(() => {
+      switch (props.size) {
+        case 'sm': return 'popup-sm';
+        case 'lg': return 'popup-lg';
+        case 'xl': return 'popup-xl';
+        default: return 'popup-md';
+      }
+    });
     onMounted(() => {
       calculatorContent()
     })
@@ -74,6 +87,10 @@ export default {
       if (element[0] && element[0].scrollHeight && element[0].clientHeight && element[0].scrollHeight > element[0].clientHeight) {
         element[0].classList.add('has_overflow')
       }
+    }
+    return {
+      sizeClass,
+      calculatorContent
     }
   },
   methods: {
@@ -152,4 +169,23 @@ html:has(.overlay_bg.on) .footer_wrapper,
 html:has(.overlay_bg.on) #main_content {
   padding-right: 10px;
 }
+
+.popup_wrap {
+  width: 50dvw;
+  max-width: 90vw;
+}
+
+.popup-sm {
+  max-width: 400px;
+}
+.popup-md {
+  max-width: 600px;
+}
+.popup-lg {
+  max-width: 800px;
+}
+.popup-xl {
+  max-width: 1000px;
+}
+
 </style>
