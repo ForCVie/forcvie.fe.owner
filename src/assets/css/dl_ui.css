@@ -942,7 +942,7 @@ body > .loading_box {
 
 /* region Breadcrum */
 .page_title {
-    padding-right: 330px;
+    /* padding-right: 330px; */
     font-size: 1.5rem;
     font-weight: 700;
     line-height: 1em;

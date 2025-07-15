@@ -306,8 +306,8 @@ body.swal2-toast-shown .swal2-container:has(.custom_toast) {
   /* background-image: url(../../images/formstyle/icon_filedown.svg); */
 }
 .btn_icon.delete::before {
-  width: 14px; height: 20px;
-  background-image: url(../../images/formstyle/icon_delete.svg);
+  width: 25px; height: 25px;
+  background-image: url(../../images/formstyle/delete.png);
 }
 .btn_icon.delete_gray::before {
   width: 32px; height: 32px;

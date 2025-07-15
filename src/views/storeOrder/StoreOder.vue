@@ -1,9 +1,16 @@
 <template>
   <section id="content" class="content_wrapper grid_content" tabindex="0">
-    <CollapseBase :isShow="openCollapse" :title="'Tìm kiếm nhanh'" :isCheck="true" :onClick="() => {
-      openCollapse = !openCollapse;
-    }
-      ">
+    <Breadcrumb :pageTitle="pageTitle"></Breadcrumb>
+    <CollapseBase
+      :isShow="openCollapse"
+      :title="'Tìm kiếm nhanh'"
+      :isCheck="true"
+      :onClick="
+        () => {
+          openCollapse = !openCollapse;
+        }
+      "
+    >
       <div class="mt-4 search_box col_3">
         <ul>
           <li>
@@ -25,8 +32,13 @@
       <div class="box_section">
         <div class="radio_tab_lg_wrap">
           <p class="radio_tab_lg" v-for="(status, index) in listStatus">
-            <input type="radio" :id="`searchFormStatus_${index}`" name="radio" v-model="searchModel.statusOrder"
-              :value="status.cdId" />
+            <input
+              type="radio"
+              :id="`searchFormStatus_${index}`"
+              name="radio"
+              v-model="searchModel.statusOrder"
+              :value="status.cdId"
+            />
             <label :for="`searchFormStatus_${index}`">
               <Badge :count="100" :max="-1"> {{ status.cdNm }} </Badge>
             </label>
@@ -34,63 +46,63 @@
         </div>
       </div>
     </div>
-
-    <div v-for="(floor, index) in floors" :key="index" class="box dp_block floor">
+    <!-- <div class="box_inner">
+        <span class="box_note">Lưu ý:
+          <strong>Các trạng thái bàn</strong> 
+          <ul style="list-style: inside;">
+            <li class="pb_2" style="list-style: inside;"><span style="margin-bottom: -5px;" class="available wd_20 hg_20 dp_inline mr_3"></span>Có khách</li>
+            <li class="pb_2" style="list-style: inside;"><span style="margin-bottom: -5px;" class="occupied wd_20 hg_20 dp_inline mr_3"></span>Còn trống</li>
+            <li class="pb_2" style="list-style: inside;"><span style="margin-bottom: -5px;" class="reserved wd_20 hg_20 dp_inline mr_3"></span>Dọn bàn</li>
+          </ul>
+        </span>
+      </div> -->
+    <div
+      v-for="(floor, index) in floors"
+      :key="index"
+      class="box dp_block floor"
+    >
       <div class="box_inner">
         <h3 class="box_title">{{ floor.name }}</h3>
       </div>
       <div class="grid">
-        <div v-for="table in floor.tables" :key="table.id" class="table" :class="table.status" @click="openModal(0)">
+        <div
+          v-for="(table, index) in floor.tables"
+          :key="table.id"
+          class="table"
+          :class="table.status + (index%2==0 ? ' blink-shadow' : '')"
+          @click="openModal(0)"
+        >
           <div class="table-number">{{ table.name }}</div>
-          <!-- <div class="table-desc">{{ table.desc }}</div> -->
+          <div class="table-desc">{{ table.desc }}</div>
         </div>
       </div>
     </div>
   </section>
-  <TModal :is-open="modalOpen[0]" :is-show-header="true" :is-show-footer="true" @close-modal="closeModal(0)">
-    <template #title>
-      <strong>개인정보 수집 및 이용에 대한 동의</strong>
-    </template>
-    <template #default>
-      <h1>fdfasd</h1>
-    </template>
-    <template #footer>
-      <button type="button" class="button btn_xl btn_white popup_close" @click="closeModal(0)">
-        닫기
-      </button>
-      <button type="button" class="button btn_xl btn_blue" @click="closeModal(0)">
-        확인
-      </button>
-    </template>
-  </TModal>
-  <TModal :size="'sm'" :is-open="modalOpen[1]" :is-show-header="true" :is-show-footer="true"
-    @close-modal="closeModal(1)">
-    <template #title>
-      <strong>Chọn Bàn ...</strong>
-    </template>
-    <template #default>
-      <div>
-        <div class="ta_c">
-          <QRCode :urlValue="'Hello fskajfhah dfsahfsadkjfh sdkajfhsad fhkasdfsjdafhsadjkfhsakjfhsdajkfhsad '" />
-        </div>
-        <span></span>
-      </div>
-    </template>
-    <template #footer>
-      <button type="button" class="button btn_xl btn_white popup_close" @click="closeModal(1)">
-        닫기
-      </button>
-      <button type="button" class="button btn_xl btn_blue" @click="closeModal(1)">
-        확인
-      </button>
-    </template>
-  </TModal>
+  <PopupSeatDetail
+    :modalOpen="modalOpen[0]"
+    :closeModal="closeModal"
+    :openModal="openModal"
+  />
+  <PopupSeatQr :modalOpen="modalOpen[1]" :closeModal="closeModal" />
+  <PopupSeatDetailOrder :modalOpen="modalOpen[2]" :closeModal="closeModal" />
+  <PopupSeatDetailRemoveOrder
+    :modalOpen="modalOpen[3]"
+    :closeModal="closeModal"
+  />
+  <PopupSeatOrder :modalOpen="modalOpen[4]" :closeModal="closeModal" />
 </template>
 
 <script setup lang="ts">
 import Badge from "@/components/common/badge/Badge.vue";
 import { CodeMngModel } from "@/stores/common/codeMng/codeMng.type";
 import { ref } from "vue";
+import PopupSeatQr from "./popup/PopupSeatQr.vue";
+import PopupSeatDetail from "./popup/PopupSeatDetail.vue";
+import PopupSeatDetailOrder from "./popup/PopupSeatDetailOrder.vue";
+import PopupSeatDetailRemoveOrder from "./popup/PopupSeatDetailRemoveOrder.vue";
+import PopupSeatOrder from "./popup/PopupSeatOrder.vue";
+
+const pageTitle = ref("Quản lý đặt bàn");
 
 const floors = ref([
   {
@@ -102,7 +114,7 @@ const floors = ref([
     tables: createTables(101, 50),
   },
 ]);
-const modalOpen = ref([false, true]);
+const modalOpen = ref([false, false, false, false, false  ]);
 const searchModel = ref({
   statusOrder: "",
 });
@@ -177,19 +189,32 @@ const closeModal = (index: number) => {
   font-weight: bold;
 }
 
-.table.available {
-  border-color: green;
+.available {
+  border: 2px solid green;
   background-color: #e6ffe6;
 }
 
-.table.occupied {
-  border-color: red;
+.occupied {
+  border: 2px solid red;
   background-color: #ffe6e6;
 }
 
-.table.reserved {
-  border-color: orange;
+.reserved {
+  border: 2px solid orange;
   background-color: #fff6e6;
+}
+
+.blink-shadow {
+  animation: blinkBoxShadow 1s infinite;
+}
+
+@keyframes blinkBoxShadow {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px rgba(0, 255, 0, 0.8);
+  }
 }
 
 .table:hover {

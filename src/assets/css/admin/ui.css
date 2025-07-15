@@ -474,7 +474,7 @@ table td .btn_tooltip {
   margin-bottom: 16px;
 }
 .page_title {
-  padding-right: 400px;
+  /* padding-right: 400px; */
   font-size: 3rem; font-weight: 600; line-height: 5.9rem;
   color: var(--black);
 }

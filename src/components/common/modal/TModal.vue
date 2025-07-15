@@ -63,7 +63,7 @@ export default {
     },
     size: {
       type: String,
-      default: 'xl', // 'sm' | 'md' | 'lg' | 'xl'
+      default: 'md', // 'sm' | 'md' | 'lg' | 'xl'
       validator: (val: string) => ['sm', 'md', 'lg', 'xl'].includes(val),
     },
   },
@@ -176,16 +176,16 @@ html:has(.overlay_bg.on) #main_content {
 }
 
 .popup-sm {
-  max-width: 400px;
+  width: 500px;
 }
 .popup-md {
-  max-width: 600px;
+  width: 700px;
 }
 .popup-lg {
-  max-width: 800px;
+  width: 1000px;
 }
 .popup-xl {
-  max-width: 1000px;
+  width: 1200px;
 }
 
 </style>

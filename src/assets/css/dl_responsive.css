@@ -304,7 +304,7 @@
 
 	/* content 1024 */
 	.content_wrapper {
-		padding-top: 85px;
+		padding-top: 85px !important;
 		min-height: 100vh;
 	}
 	.page_title {
