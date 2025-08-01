@@ -1029,3 +1029,10 @@
 
 /* hover */
 .cursor{ cursor: pointer !important; }
+
+.z_index_0 { z-index: 0 !important; }
+.z_index_1 { z-index: 1 !important; }
+.z_index_2 { z-index: 2 !important; }
+.z_index_3 { z-index: 3 !important; }
+.z_index_4 { z-index: 4 !important; }
+.z_index_5 { z-index: 5 !important; }

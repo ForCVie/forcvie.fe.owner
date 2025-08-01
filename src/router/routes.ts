@@ -2,7 +2,8 @@ import {SCREEN} from './screen';
 import authMiddleware from '@/middleware/auth';
 import logMiddleware from '@/middleware/log'
 import {storeManagerRoute} from "@/router/routeItems/storeManagerRoute";
-import { storeOrderRoute } from './storeOrder/storeOrderRoute';
+import { storeOrderRoute } from './routeItems/storeOrderRoute';
+import { employeeManagerRoute } from './routeItems/employeeManagerRoute';
 
 const getView = (path: any) => {
   return () => import(`@/views/${path}.vue`);
@@ -33,6 +34,7 @@ export const routes = [
       },
       ...getRouteItems(storeManagerRoute),
       ...getRouteItems(storeOrderRoute),
+      ...getRouteItems(employeeManagerRoute),
     ],
   },
   // {

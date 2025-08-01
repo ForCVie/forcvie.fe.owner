@@ -59,8 +59,16 @@
         </div>
       </div>
       <div>
-        <div class="box_section">
-          <h3 class="box_title">Thông tin đặt món</h3>
+        <div class="box_section mt_5">
+          <div class="box_inner">
+            <h3 class="box_title">Thông tin đặt món</h3>
+            <div class="box_title_funtion">
+              <button
+                  @click="openViewOrderFood()"
+                  class="button btn_md btn_blue">Đặt món giúp khách
+              </button>
+            </div>
+          </div>
           <table class="tbl_col">
               <col style="width: 8%" />
               <col style="width: 20%" />
@@ -162,7 +170,7 @@
   </TModal>
 </template>
 <script setup lang="ts">
-defineProps({
+const props = defineProps({
   modalOpen: {
     type: Boolean,
     default: false,
@@ -176,4 +184,9 @@ defineProps({
     required: true,
   },
 });
+
+const openViewOrderFood = () => {
+  props.openModal(5);
+  props.closeModal(0);
+};
 </script>

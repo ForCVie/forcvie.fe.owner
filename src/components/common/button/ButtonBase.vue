@@ -1,11 +1,10 @@
 <template>
   <button
     type="button"
-    class="button btn_lg btn_blue btn_responsive"
     @click="clickFunction"
     v-bind="attrs"
   >
-    {{ buttonName }}
+    <slot></slot>
   </button>
 </template>
 <script lang="ts" setup>
@@ -22,16 +21,16 @@ const props = defineProps({
   buttonName: String,
 });
 const clickFunction = () => {
-  if (roleStore.flag) {
+  // if (roleStore.flag) {
     emit("click");
-  } else {
-    Swal.fire({
-      text: t("common.message.warring"),
-      showCancelButton: false,
-      confirmButtonColor: "#DD6B55",
-      confirmButtonText: "확인",
-      cancelButtonText: "취소",
-    });
-  }
+  // } else {
+  //   Swal.fire({
+  //     text: t("common.message.warring"),
+  //     showCancelButton: false,
+  //     confirmButtonColor: "#DD6B55",
+  //     confirmButtonText: "확인",
+  //     cancelButtonText: "취소",
+  //   });
+  // }
 };
 </script>

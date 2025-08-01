@@ -70,13 +70,13 @@ table tr.disabled, table tr[disabled] {
 }
 
 .tbl_row tbody th {
-	padding: 8px 24px;
+	padding: 8px 5px 8px 24px;
 	font-weight: 500; color: var(--tb-text--color);
 	/* background-color: var(--tb-bg--color); */
 	/* border-bottom: 1px solid  var(--light-blue-gray); */
 }
 .tbl_row tbody td {
-	padding: 8px 24px;
+	padding: 8px 0px;
 	font-weight: 500;
 	/* border-bottom: 1px solid  var(--light-blue-gray); */
 }

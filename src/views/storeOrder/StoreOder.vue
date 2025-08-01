@@ -1,52 +1,42 @@
 <template>
   <section id="content" class="content_wrapper grid_content" tabindex="0">
     <Breadcrumb :pageTitle="pageTitle"></Breadcrumb>
-    <CollapseBase
-      :isShow="openCollapse"
-      :title="'Tìm kiếm nhanh'"
-      :isCheck="true"
-      :onClick="
-        () => {
+    <div v-show="!modalOpen[5]">
+      <CollapseBase :isShow="openCollapse" :title="'Tìm kiếm nhanh'" :isCheck="true" :onClick="() => {
           openCollapse = !openCollapse;
         }
-      "
-    >
-      <div class="mt-4 search_box col_3">
-        <ul>
-          <li>
-            <p>Tiêu Đề</p>
-            <InputBase id="bannerNm" />
-          </li>
-          <li>
-            <p>URL</p>
-            <InputBase id="url" />
-          </li>
-          <li>
-            <p>Thể Loại</p>
-            <InputBase id="typeCd" />
-          </li>
-        </ul>
-      </div>
-    </CollapseBase>
-    <div class="box dp_block pd_0">
-      <div class="box_section">
-        <div class="radio_tab_lg_wrap">
-          <p class="radio_tab_lg" v-for="(status, index) in listStatus">
-            <input
-              type="radio"
-              :id="`searchFormStatus_${index}`"
-              name="radio"
-              v-model="searchModel.statusOrder"
-              :value="status.cdId"
-            />
-            <label :for="`searchFormStatus_${index}`">
-              <Badge :count="100" :max="-1"> {{ status.cdNm }} </Badge>
-            </label>
-          </p>
+        ">
+        <div class="mt-4 search_box col_3">
+          <ul>
+            <li>
+              <p>Tiêu Đề</p>
+              <InputBase id="bannerNm" />
+            </li>
+            <li>
+              <p>URL</p>
+              <InputBase id="url" />
+            </li>
+            <li>
+              <p>Thể Loại</p>
+              <InputBase id="typeCd" />
+            </li>
+          </ul>
+        </div>
+      </CollapseBase>
+      <div class="box dp_block pd_0">
+        <div class="box_section">
+          <div class="radio_tab_lg_wrap">
+            <p class="radio_tab_lg" v-for="(status, index) in listStatus">
+              <input type="radio" :id="`searchFormStatus_${index}`" name="radio" v-model="searchModel.statusOrder"
+                :value="status.cdId" />
+              <label :for="`searchFormStatus_${index}`">
+                <Badge :count="100" :max="-1"> {{ status.cdNm }} </Badge>
+              </label>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-    <!-- <div class="box_inner">
+      <!-- <div class="box_inner">
         <span class="box_note">Lưu ý:
           <strong>Các trạng thái bàn</strong> 
           <ul style="list-style: inside;">
@@ -56,39 +46,26 @@
           </ul>
         </span>
       </div> -->
-    <div
-      v-for="(floor, index) in floors"
-      :key="index"
-      class="box dp_block floor"
-    >
-      <div class="box_inner">
-        <h3 class="box_title">{{ floor.name }}</h3>
-      </div>
-      <div class="grid">
-        <div
-          v-for="(table, index) in floor.tables"
-          :key="table.id"
-          class="table"
-          :class="table.status + (index%2==0 ? ' blink-shadow' : '')"
-          @click="openModal(0)"
-        >
-          <div class="table-number">{{ table.name }}</div>
-          <div class="table-desc">{{ table.desc }}</div>
+      <div v-for="(floor, index) in floors" :key="index" class="box dp_block floor">
+        <div class="box_inner">
+          <h3 class="box_title">{{ floor.name }}</h3>
+        </div>
+        <div class="grid">
+          <div v-for="(table, index) in floor.tables" :key="table.id" class="table"
+            :class="table.status + (index % 2 == 0 ? ' blink-shadow' : '')" @click="openModal(0)">
+            <div class="table-number">{{ table.name }}</div>
+            <div class="table-desc">{{ table.desc }}</div>
+          </div>
         </div>
       </div>
+
     </div>
+    <StoreOrderFood v-if="modalOpen[5]" :modalOpen="modalOpen[5]" :closeModal="closeModal" :openModal="openModal" />
   </section>
-  <PopupSeatDetail
-    :modalOpen="modalOpen[0]"
-    :closeModal="closeModal"
-    :openModal="openModal"
-  />
+  <PopupSeatDetail :modalOpen="modalOpen[0]" :closeModal="closeModal" :openModal="openModal" />
   <PopupSeatQr :modalOpen="modalOpen[1]" :closeModal="closeModal" />
   <PopupSeatDetailOrder :modalOpen="modalOpen[2]" :closeModal="closeModal" />
-  <PopupSeatDetailRemoveOrder
-    :modalOpen="modalOpen[3]"
-    :closeModal="closeModal"
-  />
+  <PopupSeatDetailRemoveOrder :modalOpen="modalOpen[3]" :closeModal="closeModal" />
   <PopupSeatOrder :modalOpen="modalOpen[4]" :closeModal="closeModal" />
 </template>
 
@@ -101,6 +78,7 @@ import PopupSeatDetail from "./popup/PopupSeatDetail.vue";
 import PopupSeatDetailOrder from "./popup/PopupSeatDetailOrder.vue";
 import PopupSeatDetailRemoveOrder from "./popup/PopupSeatDetailRemoveOrder.vue";
 import PopupSeatOrder from "./popup/PopupSeatOrder.vue";
+import StoreOrderFood from "./main/StoreOrderFood.vue";
 
 const pageTitle = ref("Quản lý đặt bàn");
 
@@ -114,7 +92,7 @@ const floors = ref([
     tables: createTables(101, 50),
   },
 ]);
-const modalOpen = ref([false, false, false, false, false  ]);
+const modalOpen = ref([false, false, false, false, false, false]);
 const searchModel = ref({
   statusOrder: "",
 });
@@ -133,11 +111,6 @@ const listStatus = ref<CodeMngModel[]>([
   {
     cdId: "2",
     cdNm: "Còn Trống",
-    upCdId: "",
-  },
-  {
-    cdId: "3",
-    cdNm: "Dọn bàn",
     upCdId: "",
   },
   {
@@ -209,9 +182,12 @@ const closeModal = (index: number) => {
 }
 
 @keyframes blinkBoxShadow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 rgba(0, 0, 0, 0);
   }
+
   50% {
     box-shadow: 0 0 20px 5px rgba(0, 255, 0, 0.8);
   }
