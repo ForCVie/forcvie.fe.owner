@@ -1,60 +1,6 @@
 <template>
   <div class="header_wrap">
     <div class="header_top">
-      <button
-        @click="openDrawer"
-        class="mg_l30"
-        style="
-          width: 25px;
-          height: 25px;
-          padding: 0;
-        "
-      >
-        <svg
-          width="25px"
-          height="25px"
-          viewBox="0 0 20.00 20.00"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          xmlns:xlink="http://www.w3.org/1999/xlink"
-          xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
-          fill="#000000"
-        >
-          <g id="SVGRepo_bgCarrier" stroke-width="0" />
-
-          <g
-            id="SVGRepo_tracerCarrier"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-
-          <g id="SVGRepo_iconCarrier">
-            <title>hamburger</title>
-            <desc>Created with Sketch Beta.</desc>
-            <defs></defs>
-            <g
-              id="Page-1"
-              stroke-width="0.0002"
-              fill="none"
-              fill-rule="evenodd"
-              sketch:type="MSPage"
-            >
-              <g
-                id="Icon-Set"
-                sketch:type="MSLayerGroup"
-                transform="translate(-210.000000, -887.000000)"
-                fill="#000000"
-              >
-                <path
-                  d="M229,895 L211,895 C210.448,895 210,895.448 210,896 C210,896.553 210.448,897 211,897 L229,897 C229.552,897 230,896.553 230,896 C230,895.448 229.552,895 229,895 L229,895 Z M229,903 L211,903 C210.448,903 210,903.448 210,904 C210,904.553 210.448,905 211,905 L229,905 C229.552,905 230,904.553 230,904 C230,903.448 229.552,903 229,903 L229,903 Z M211,889 L229,889 C229.552,889 230,888.553 230,888 C230,887.448 229.552,887 229,887 L211,887 C210.448,887 210,887.448 210,888 C210,888.553 210.448,889 211,889 L211,889 Z"
-                  id="hamburger"
-                  sketch:type="MSShapeGroup"
-                ></path>
-              </g>
-            </g>
-          </g>
-        </svg>
-      </button>
       <div class="grid_content">
         <h1 class="header_logo">
           <router-link to="/">
@@ -89,7 +35,7 @@
         </div>
     </div>
 
-    <Drawer :position="'left'" :isOpen="isDrawerOpen" @close="closeDrawer">
+    <!-- <Drawer :position="'left'" :isOpen="isDrawerOpen" @close="closeDrawer">
       <div class="ta_c">
         <h1 class="header_logo">
           <router-link to="/">
@@ -99,7 +45,7 @@
       </div>
       <hr />
       <TNavTree v-if="menuData.length > 0" :menu-items="menuData" />
-    </Drawer>
+    </Drawer> -->
     <!-- <div class="header_bottom">
       <div class="grid_content">
         <nav class="nav_wrap"> -->
@@ -131,6 +77,13 @@
       </div>
     </div> -->
   </div>
+  
+    <div 
+        @mouseenter="openDrawer"
+        @mouseleave="closeDrawer"
+     class="menu_wrap" :class="isDrawerOpen ? '' : 'active'">
+      <TNavTree v-if="menuData.length > 0" :menu-items="menuData" :is-open-menu="isDrawerOpen" />
+    </div>
   <LoadingComponent v-if="isLoading"></LoadingComponent>
 </template>
 
@@ -183,24 +136,26 @@ const menuData = ref([]);
 
 const getMenu = async () => {
   const menuJson = [
-    { menuId: "CMM000000000000001", parentId: "", nm: "Quản Lý Quyền" },
+    { menuId: "CMM000000000000001", parentId: "", nm: "Quản Lý Quyền", icon: "homepage.png" },
     {
       menuId: "CMM000000000000002",
       parentId: "CMM000000000000001",
+      route: "/template",
       nm: "QL Resource",
     },
     {
       menuId: "CMM000000000000003",
       parentId: "CMM000000000000001",
+      route: "/",
       nm: "QL Role",
     },
-    { menuId: "CMM000000000000006", parentId: "", nm: "Quản Lý Promotional" },
+    { menuId: "CMM000000000000006", parentId: "", nm: "Quản Lý Promotional" , icon: "demo1.png"},
     {
       menuId: "CMM000000000000007",
       parentId: "CMM000000000000006",
       nm: "Hiển Thị Footer",
     },
-    { menuId: "CMM000000000000012", parentId: "", nm: "Quản Lý Chính Sách" },
+    { menuId: "CMM000000000000012", parentId: "", nm: "Quản Lý Chính Sách", icon: "demo2.png" },
     {
       menuId: "CMM000000000000013",
       parentId: "CMM000000000000012",
@@ -294,5 +249,19 @@ const logout = () => {
   position: absolute;
   bottom: 0px;
   z-index: 9;
+}
+.menu_wrap {
+  position: fixed;
+  width: 280px;
+  height: 100%;
+  background-color: #fff;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  padding-top: 85px;
+  transition: width 0.3s ease;
+}
+.menu_wrap.active {
+  width: 70px;
 }
 </style>
