@@ -37,6 +37,7 @@
     :paginationPageSize="paginationPageSize"
     :paginationPageSizeSelector="paginationPageSizeSelector"
     :gridOptions="newGridOptions ? newGridOptions : gridOptions"
+    :rowHeight="rowHeight"
     @grid-ready="onGridReady"
     @first-data-rendered="onFirstDataRendered"
     @rowClicked="rowClick"
@@ -117,6 +118,10 @@ export default {
     id: {
       type: String,
       default :'myGrid'
+    },
+    rowHeight: {
+      type: Number,
+      default: 42
     }
     // customPagination: null
   },
@@ -251,47 +256,47 @@ export default {
       await this.customPagination(this.targetPage, this.paginationPageSizeSelect)
     },
      countRowOfPage() {
-           const gridApi = this.$refs.agGrid.api;
-            this.firstDisplayedRow = gridApi.getFirstDisplayedRow() + 1;
-            const mygrid = document.getElementById(this.id);
-            const agRootWrapperBody = mygrid.querySelector('.ag-root-wrapper-body')
+          //  const gridApi = this.$refs.agGrid.api;
+          //   this.firstDisplayedRow = gridApi.getFirstDisplayedRow() + 1;
+          //   const mygrid = document.getElementById(this.id);
+          //   const agRootWrapperBody = mygrid.querySelector('.ag-root-wrapper-body')
 
-            const endRowCount = this.firstDisplayedRow + this.paginationPageSizeSelect -1;
+          //   const endRowCount = this.firstDisplayedRow + this.paginationPageSizeSelect -1;
             
-            if (endRowCount < this.rowData.length) {
-                this.endDisplayedRow = endRowCount;
-            } else {
-                this.endDisplayedRow = this.rowData.length;
-            }
-            const rowCount = this.endDisplayedRow - this.firstDisplayedRow;
-            const numberRowData = 11;
-            let height = 0;
-            setTimeout(() => {
-            const node = this.$refs.agGrid.api.getRenderedNodes();
-            if(node[0]){
-              height = node[0].rowHeight + 5;
-            }
-            if (rowCount < this.paginationPageSize) {
-              gridApi.setGridOption('paginationPageSize', this.paginationPageSizeSelect);
-              gridApi.setGridOption('domLayout', 'normal');
-              const h = height * (rowCount + 2);
-                if (agRootWrapperBody) {
-                     if(rowCount < 1) {
-                       agRootWrapperBody.style.height = `125px`;
-                     } else {
-                       agRootWrapperBody.style.height = `${height * (rowCount + 2) + 2}px`;
-                     }
-                  }
-            }
-            else {
-                gridApi.setGridOption('paginationPageSize', this.paginationPageSizeSelect);
-                gridApi.setGridOption('domLayout', 'normal');
-                if (agRootWrapperBody) {
-                      agRootWrapperBody.style.height = `${height * (numberRowData + 2)}px`;
-                  }
-                gridApi.onSortChanged()
-            }
-             },0)
+          //   if (endRowCount < this.rowData.length) {
+          //       this.endDisplayedRow = endRowCount;
+          //   } else {
+          //       this.endDisplayedRow = this.rowData.length;
+          //   }
+          //   const rowCount = this.endDisplayedRow - this.firstDisplayedRow;
+          //   const numberRowData = 11;
+          //   let height = 0;
+            // setTimeout(() => {
+            // const node = this.$refs.agGrid.api.getRenderedNodes();
+            // if(node[0]){
+            //   height = node[0].rowHeight + 5;
+            // }
+            // if (rowCount < this.paginationPageSize) {
+            //   gridApi.setGridOption('paginationPageSize', this.paginationPageSizeSelect);
+            //   gridApi.setGridOption('domLayout', 'normal');
+            //   const h = height * (rowCount + 2);
+            //     if (agRootWrapperBody) {
+            //          if(rowCount < 1) {
+            //            agRootWrapperBody.style.height = `125px`;
+            //          } else {
+            //            agRootWrapperBody.style.height = `${height * (rowCount + 2) + 2}px`;
+            //          }
+            //       }
+            // }
+            // else {
+            //     gridApi.setGridOption('paginationPageSize', this.paginationPageSizeSelect);
+            //     gridApi.setGridOption('domLayout', 'normal');
+            //     if (agRootWrapperBody) {
+            //           agRootWrapperBody.style.height = `${height * (numberRowData + 2)}px`;
+            //       }
+            //     gridApi.onSortChanged()
+            // }
+            //  },0)
         },
    async customPagination(pageNumber, paginationPageSizeSelect) {
      await this.$emit('customPagination', pageNumber, paginationPageSizeSelect, this.sortField, this.sortType)

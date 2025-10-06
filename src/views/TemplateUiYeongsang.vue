@@ -10,6 +10,48 @@
           <div class="box">
             <TableService />
           </div>
+          <div class="form-container">
+            <h3 style="background-color: yellow;" class="section_tit_md">Select Address</h3>
+            <AddressSelector v-model="selectedAddress" />
+            
+            <div class="result">
+              <h3>Dữ liệu được truyền ra ngoài:</h3>
+              <pre>{{ selectedAddress || 'Chưa chọn địa chỉ nào' }}</pre>
+            </div>
+            
+            <button class="btn_round btn_sm btn_primary" @click="setAddressManually">Set địa chỉ mặc định</button>
+            <button class="btn_round btn_sm btn_primary" @click="clearAddress">Xóa địa chỉ</button>
+          </div>
+          
+          <div class="p-8 max-w-2xl mx-auto bg-gray-50 min-h-screen">
+              <h1 class="text-3xl font-bold text-center text-indigo-700 mb-6">Demo Chọn Địa Chỉ (Tỉnh - Xã)</h1>
+              <p class="text-center text-sm text-gray-500 mb-8">
+                  Dữ liệu đầu vào và đầu ra sử dụng `v-model`.
+              </p>
+              
+              <!-- Component AddressSelector đã import -->
+              <AddressSelectV2 v-model="selectedAddress" />
+
+              <div class="mt-12 p-6 bg-white border border-gray-200 rounded-lg shadow-md">
+                  <h2 class="text-xl font-semibold text-gray-800 mb-4">
+                      Dữ liệu Địa chỉ Đã Chọn (modelValue):
+                  </h2>
+                  <pre class="bg-gray-100 p-4 rounded-md overflow-x-auto text-sm">
+                      {{ selectedAddress ? JSON.stringify(selectedAddress, null, 2) : 'Chưa có địa chỉ nào được chọn.' }}
+                  </pre>
+
+                  <div v-if="selectedAddress" class="mt-4 text-green-600 font-medium">
+                      Địa chỉ đầy đủ: 
+                      <span class="font-bold">{{ selectedAddress.ward }}, {{ selectedAddress.district }}, {{ selectedAddress.province }}</span>
+                  </div>
+                  
+                  <button @click="setAddressManually" 
+                          class="mt-6 px-4 py-2 bg-indigo-500 text-white rounded-lg shadow hover:bg-indigo-600 transition duration-150">
+                      Thiết lập giá trị ban đầu (Preset)
+                  </button>
+              </div>
+
+          </div>
           <MenuItem 
             :items="menuItemList"
             :listData="menuItemList"
@@ -493,6 +535,15 @@
                           v-model="checkboxGroup"
                           :id="item.id" :name="item.id" :key="item.id" :label="item.name">
                       </CheckboxBase>
+                    </div>
+                  </li>
+                  <li>
+                    <p style="background-color: yellow;">Toggle Switch</p>
+                    <div>
+                      <ToggleSwitch v-model="isOn1" size="small" />
+                      <ToggleSwitch v-model="isOn1" size="medium" />
+                      <ToggleSwitch v-model="isOn1" size="large" />
+                      <ToggleSwitch v-model="isOn1" :size="80" />
                     </div>
                   </li>
                   <li>
@@ -2050,6 +2101,7 @@ import VueSelect from "@/components/common/vueSelect/VueSelect.vue";
 import RadioButtonGrid from '@/components/common/grid/RadioButtonGrid.vue'
 import MenuItem from '@/components/common/menuItem/MenuItem.vue'
 import TableService from '@/components/common/tableService/TableService.vue'
+import AddressSelectV2 from '@/components/common/input/AddressSelectV2.vue'
 
 export default defineComponent({
   data() {
@@ -2060,6 +2112,8 @@ export default defineComponent({
         {label: 'dept1', link: '#'},
         {label: 'dept2', link: '/banner'}
       ],
+      isOn1:true,
+      selectedAddress: {},
       menuItemList: [
         {
           "cdId": "1",
@@ -2584,6 +2638,16 @@ export default defineComponent({
     //   }
   },
   methods: {
+    setAddressManually() {
+      this.selectedAddress = {
+        province: 'Thành phố Hồ Chí Minh',
+        district: 'Quận 1',
+        ward: 'Phường Đa Kao'
+      };
+    },
+    clearAddress() {
+      this.selectedAddress = null;
+    },
     exportExcel() {
       // Thực hiện xử lý data xong call dowload
       this.exportExcelRef.downloadExcel();

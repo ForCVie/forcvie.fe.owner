@@ -4,6 +4,7 @@ import logMiddleware from '@/middleware/log'
 import {storeManagerRoute} from "@/router/routeItems/storeManagerRoute";
 import { storeOrderRoute } from './routeItems/storeOrderRoute';
 import { employeeManagerRoute } from './routeItems/employeeManagerRoute';
+import { foodManagerRoute } from './routeItems/foodManagerRoute';
 
 const getView = (path: any) => {
   return () => import(`@/views/${path}.vue`);
@@ -35,6 +36,7 @@ export const routes = [
       ...getRouteItems(storeManagerRoute),
       ...getRouteItems(storeOrderRoute),
       ...getRouteItems(employeeManagerRoute),
+      ...getRouteItems(foodManagerRoute),
     ],
   },
   // {
