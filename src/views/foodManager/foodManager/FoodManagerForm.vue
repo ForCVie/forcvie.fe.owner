@@ -37,22 +37,6 @@
               </td>
             </tr>
             <tr>
-              <th scope="row" class="required">Thành phần</th>
-              <td>
-                <InputBase
-                  id="route"
-                />
-              </td>
-            </tr>
-            <tr>
-              <th scope="row" class="required">Lương Calo</th>
-              <td>
-                <InputBase
-                  id="route"
-                />
-              </td>  
-            </tr> 
-            <tr>
               <th scope="row" class="required">Size</th>
               <td>
                 <div v-for="option in listStore" >
@@ -61,6 +45,12 @@
                                 >
                   </CheckboxBase>
                 </div>
+              </td>  
+            </tr> 
+            <tr>
+              <th scope="row" class="required">Ảnh món ăn</th>
+              <td>
+                <InputFileBase/>
               </td>  
             </tr> 
             <tr>

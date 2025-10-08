@@ -1,6 +1,5 @@
 <template>
     <div class="address-container">
-        <!-- Hiển thị địa chỉ đã chọn: chỉ có Phường/Xã và Tỉnh/Thành phố -->
         <div class="selected-address" @click="toggleSelector">
             {{ displayAddress }}
         </div>
@@ -8,11 +7,9 @@
         <div v-show="isOpen" class="address-selector">
             <div class="tabs">
                 <div class="tab-items-wrapper">
-                    <!-- Tab Tỉnh/Thành phố -->
                     <div class="tab-item" :class="{ active: activeTab === 'province' }" @click="switchTab('province')">
                         Tỉnh/Thành phố
                     </div>
-                    <!-- Tab Phường/Xã (Bỏ qua Quận/Huyện) -->
                     <div class="tab-item" :class="{ active: activeTab === 'ward', disabled: !selectedProvince }"
                         @click="switchTab('ward')">
                         Phường/Xã
@@ -26,19 +23,16 @@
                     <input v-model="searchQuery" type="text" placeholder="Tìm kiếm..." class="search-input">
                 </div>
 
-                <!-- Nội dung Tab Tỉnh/Thành phố -->
                 <div v-show="activeTab === 'province'" class="options-grid">
-                    <div v-for="province in filteredProvinces" :key="province.name" class="option-item"
-                        :class="{ selected: province === selectedProvince }" @click="selectProvince(province)">
+                    <div v-for="province in filteredProvinces" :key="province.id" class="option-item"
+                        :class="{ selected: province.id === selectedProvince?.id }" @click="selectProvince(province)">
                         {{ province.name }}
                     </div>
                 </div>
 
-                <!-- Nội dung Tab Phường/Xã (Hiển thị tất cả wards của tỉnh đã chọn) -->
                 <div v-show="activeTab === 'ward'" class="options-grid">
                     <div v-for="ward in filteredWards" :key="ward.id" class="option-item"
                         :class="{ selected: ward.id === selectedWard?.id }" @click="selectWard(ward)">
-                        <!-- Chỉ hiển thị tên Phường/Xã -->
                         {{ ward.name }}
                     </div>
                 </div>
@@ -48,37 +42,70 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { locationStore } from '@/stores/common/location'; // Giả sử đã có
+import { ref, computed, watch, onBeforeMount } from 'vue';
 
+// --- Giả lập Store và Data mẫu (Cấu trúc 2 cấp) ---
+// CHÚ Ý: Bạn cần thay thế phần này bằng store và API thực tế của mình.
+const mockData = [
+    {
+        id: 'HN', name: 'Thành phố Hà Nội', wards: [
+            { id: 'HN-CV', name: 'Phường Cống Vị' },
+            { id: 'HN-BT', name: 'Phường Bách Thảo' },
+            { id: 'HN-NV', name: 'Phường Nghĩa Vĩ' },
+            { id: 'HN-QD', name: 'Phường Quan Đôi' }
+        ]
+    },
+    {
+        id: 'HCM', name: 'Thành phố Hồ Chí Minh', wards: [
+            { id: 'HCM-BT', name: 'Phường Bến Thành' },
+            { id: 'HCM-CV', name: 'Phường Cô Giang' },
+            { id: 'HCM-AL', name: 'Phường An Lạc' },
+            { id: 'HCM-BHH', name: 'Phường Bình Hưng Hòa' }
+        ]
+    },
+];
+const store = locationStore();
+const provinces = ref([]);
+
+onBeforeMount(async () => {
+    await store.getProvinces(); // API call thực tế
+    provinces.value = store.provinces.data; // Lấy data thực tế
+    // provinces.value = mockData; // Dùng data mẫu
+
+    // Khởi tạo modelValue sau khi có dữ liệu
+    if (props.modelValue) {
+        initializeSelection(props.modelValue);
+    }
+});
+// --- End Giả lập Store ---
+
+
+// modelValue mong đợi/trả về: { province: { name: string, id: any }, ward: { name: string, id: any } }
 const props = defineProps(['modelValue']);
-// modelValue giờ đây chỉ mong đợi/trả về { province: string, ward: string }
 const emit = defineEmits(['update:modelValue']);
 
-// Data mẫu đã được làm phẳng thành cấu trúc 2 cấp (Tỉnh -> Xã/Phường)
-const provinces = ref([
-    { "name": "Thành phố Hà Nội", "wards": [{ "name": "Phường Phúc Xá" }, { "name": "Phường Trúc Bạch" }, { "name": "Phường Phan Chu Trinh" }, { "name": "Phường Hàng Buồm" }, { "name": "Phường Quảng An" }, { "name": "Phường Nhật Tân" }] },
-    { "name": "Thành phố Hồ Chí Minh", "wards": [{ "name": "Phường Tân Định" }, { "name": "Phường Đa Kao" }, { "name": "Phường Võ Thị Sáu" }, { "name": "Phường 4" }, { "name": "Phường Linh Trung" }, { "name": "Phường Hiệp Phú" }] },
-    { "name": "Tỉnh Bà Rịa - Vũng Tàu", "wards": [{ "name": "Phường 1" }, { "name": "Phường Thắng Tam" }, { "name": "Phường Phú Mỹ" }, { "name": "Xã Tân Hoà" }] }
-]);
 
 const isOpen = ref(false);
 const activeTab = ref('province');
-const selectedProvince = ref(null); 
-// selectedWard lưu object đã được làm phẳng: { name: wardName, provinceName: provinceName, id: uniqueId }
-const selectedWard = ref(null); 
+// selectedProvince sẽ là object { id, name, wards: [...] }
+const selectedProvince = ref(null);
+// selectedWard sẽ là object { id, name, provinceName, provinceId }
+const selectedWard = ref(null);
 const searchQuery = ref('');
 
 // --- Computed Properties ---
 
-// Danh sách các Phường/Xã đã được làm phẳng (flat list) của tỉnh đã chọn
+// Danh sách các Phường/Xã đã được làm phẳng (Chính là selectedProvince.value.wards)
 const availableWardsFlat = computed(() => {
     if (!selectedProvince.value) return [];
-    // Lặp qua wards của tỉnh và tạo ID duy nhất
+
+    // Chỉ cần map để thêm thông tin Province vào Ward
     return selectedProvince.value.wards.map(ward => ({
         name: ward.name,
+        id: ward.id, // DÙNG ID CÓ SẴN CỦA WARD
         provinceName: selectedProvince.value.name,
-        // ID dựa trên tên Tỉnh và tên Xã
-        id: `${selectedProvince.value.name}-${ward.name}` 
+        provinceId: selectedProvince.value.id, // DÙNG ID CÓ SẴN CỦA PROVINCE
     }));
 });
 
@@ -99,34 +126,58 @@ const filteredWards = computed(() => {
     const wards = availableWardsFlat.value;
     if (!searchQuery.value) return wards;
     const query = searchQuery.value.toLowerCase().trim();
-    // Chỉ lọc theo tên ward
+    // Lọc theo tên ward
     return wards.filter(w => w.name.toLowerCase().includes(query));
 });
 
 
-// --- Watchers for initialization (Updated to only require province and ward) ---
+// --- Watchers for initialization ---
 
-watch(() => props.modelValue, (initialValue) => {
-    if (initialValue && initialValue.province && initialValue.ward) {
-        const p = provinces.value.find(prov => prov.name === initialValue.province);
+const initializeSelection = (initialValue) => {
+    // Kiểm tra cấu trúc: { province: {name, id}, ward: {name, id} }
+    if (initialValue?.province?.name && initialValue?.ward?.name) {
+        
+        // 1. Tìm Tỉnh dựa trên TÊN
+        const p = provinces.value.find(prov => prov.name === initialValue.province.name);
         
         if (p) {
-            selectedProvince.value = p;
+            // 2. Thiết lập selectedProvince với ID và Name từ initialValue
+            selectedProvince.value = { 
+                name: p.name, 
+                id: initialValue.province.id || p.id, 
+                wards: p.wards 
+            };
             
-            // Tìm Ward trực tiếp trong mảng wards của tỉnh
-            const matchingWard = p.wards.find(w => w.name === initialValue.ward);
+            // 3. Tìm Ward trong mảng wards trực tiếp
+            const matchingWard = p.wards.find(w => w.name === initialValue.ward.name);
 
             if (matchingWard) {
-                // Tạo object selectedWard theo cấu trúc flat mới
+                // 4. Tạo object selectedWard theo cấu trúc flat (sử dụng ID thực)
                 selectedWard.value = {
                     name: matchingWard.name,
+                    id: initialValue.ward.id || matchingWard.id,
                     provinceName: p.name,
-                    id: `${p.name}-${matchingWard.name}`
+                    provinceId: initialValue.province.id,
                 };
             }
         }
     }
-}, { immediate: true });
+}
+
+watch(() => props.modelValue, (initialValue) => {
+    // Chỉ chạy khi provinces.value đã có dữ liệu
+    if (provinces.value.length > 0) {
+        initializeSelection(initialValue);
+    }
+}, { immediate: true }); 
+
+// Nếu data được load sau, cần watch thêm provinces
+watch(provinces, (newProvinces) => {
+    if (newProvinces.length > 0 && props.modelValue) {
+        initializeSelection(props.modelValue);
+    }
+});
+
 
 // --- Methods ---
 
@@ -139,21 +190,32 @@ const switchTab = (tab) => {
 };
 
 const selectProvince = (province) => {
-    selectedProvince.value = province;
+    // Lưu object tỉnh với id, name và wards
+    selectedProvince.value = { 
+        name: province.name, 
+        id: province.id, 
+        wards: province.wards
+    };
     selectedWard.value = null; 
     activeTab.value = 'ward'; 
     searchQuery.value = '';
 };
 
-// Ward object là object đã được làm phẳng và có chứa districtName (dùng nội bộ)
+// Ward object là object đã được làm phẳng và có chứa ID
 const selectWard = (ward) => {
     selectedWard.value = ward;
     isOpen.value = false;
     
-    // Emit modelValue chỉ với Tỉnh và Xã
+    // Emit modelValue với cả Name và ID
     emit('update:modelValue', {
-        province: selectedProvince.value?.name,
-        ward: selectedWard.value?.name,
+        province: {
+            name: selectedProvince.value?.name,
+            id: selectedProvince.value?.id,
+        },
+        ward: {
+            name: selectedWard.value?.name,
+            id: selectedWard.value?.id, // ID lấy từ object ward đã được flatten (có sẵn)
+        },
     });
 };
 
@@ -162,36 +224,44 @@ const resetSelection = () => {
     selectedWard.value = null;
     activeTab.value = 'province';
     searchQuery.value = '';
-    emit('update:modelValue', null);
+    // Trả về null khi reset
+    emit('update:modelValue', null); 
 };
 </script>
+
+---
 
 <style scoped>
 :root {
     --primary: #0b74e5;
+    --border-color: #d1d5db;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
+/* 1. CONTAINER: Đặt relative và tăng width để chứa 3 cột */
 .address-container { 
-    width: 800px; 
-    max-width: 90%; 
-    background-color: #fff; 
-    border-radius: 12px; 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, .15); 
-    padding: 24px; 
+    position: relative; 
     font-family: 'Inter', sans-serif; 
-    margin: 20px auto;
+    margin: 0; 
+    padding: 0;
 }
+
+/* 2. SELECTED ADDRESS: Thiết kế như một select box */
 .selected-address { 
-    border: 1px solid #d1d5db; 
-    padding: 12px 16px; 
-    border-radius: 8px; 
+    width: 100%;
+    border: 1px solid var(--border-color); 
+    padding: 10px 12px; 
+    border-radius: 6px; 
     cursor: pointer; 
     color: #4b5563; 
-    margin-bottom: 16px; 
+    margin-bottom: 0; 
     position: relative; 
     user-select: none;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 400;
     transition: border-color 0.2s ease;
+    background-color: #fff;
+    box-sizing: border-box;
 }
 .selected-address:hover {
     border-color: var(--primary);
@@ -199,17 +269,30 @@ const resetSelection = () => {
 .selected-address::after { 
     content: '▼'; 
     position: absolute; 
-    right: 16px; 
+    right: 12px; 
     top: 50%; 
     transform: translateY(-50%); 
-    font-size: 10px; 
+    font-size: 8px; 
     color: #9ca3af;
 }
+
+/* 3. ADDRESS SELECTOR: Vị trí tuyệt đối để không ảnh hưởng form */
 .address-selector { 
-    border: 1px solid #e5e7eb; 
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    right: 0; 
+    z-index: 1000; 
+    margin-top: 4px; 
+    
+    background-color: #fff; 
+    border: 1px solid var(--border-color); 
     border-radius: 8px; 
+    box-shadow: var(--shadow); 
     overflow: hidden;
 }
+
+/* 4. TABS & CONTENT (Điều chỉnh padding) */
 .tabs { 
     display: flex; 
     justify-content: space-between; 
@@ -222,17 +305,17 @@ const resetSelection = () => {
     flex-grow: 1; 
 }
 .tab-item { 
-    padding: 14px 20px; 
+    padding: 10px 12px; 
     cursor: pointer; 
     color: #6b7280; 
     flex: 1; 
     text-align: center; 
     transition: all .2s ease; 
     font-weight: 500;
+    font-size: 13px;
     border-right: 1px solid #e5e7eb;
 }
 .tab-items-wrapper .tab-item:last-child { border-right: none; }
-.tab-item:first-child { border-top-left-radius: 8px; }
 .tab-item.active { 
     color: var(--primary); 
     background-color: #fff; 
@@ -247,10 +330,10 @@ const resetSelection = () => {
     border-bottom: none;
 }
 .reset-btn { 
-    padding: 0 20px; 
+    padding: 0 12px; 
     cursor: pointer; 
     color: #ef4444; 
-    font-size: 14px; 
+    font-size: 13px; 
     font-weight: 600; 
     white-space: nowrap; 
     transition: opacity .2s ease; 
@@ -259,31 +342,30 @@ const resetSelection = () => {
     opacity: .8; 
 }
 .tab-content { 
-    padding: 16px; 
-    height: 300px; 
+    padding: 12px; 
+    height: 250px; 
     overflow-y: auto; 
     background-color: #fff;
 }
+
+/* 5. OPTIONS GRID: Sử dụng Grid 3 cột */
 .options-grid { 
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 8px; 
 }
+
 .option-item { 
-    padding: 10px 14px; 
+    padding: 8px 10px; 
     border: 1px solid #e0e0e0; 
-    border-radius: 6px; 
+    border-radius: 4px; 
     cursor: pointer; 
     font-size: 14px; 
     transition: all .2s ease;
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    text-align: center; 
 }
 .option-item:hover { 
     border-color: var(--primary); 
-    background-color: #f0f8ff;
 }
 .option-item.selected { 
     background-color: var(--primary); 
@@ -291,18 +373,14 @@ const resetSelection = () => {
     border-color: var(--primary); 
     font-weight: 600;
 }
-.option-item.selected:hover {
-    background-color: var(--primary); 
-    color: #fff;
-}
 .search-wrapper { 
-    padding: 0 0 16px 0; 
+    padding: 0 0 12px 0; 
 }
 .search-input { 
     width: 100%; 
-    padding: 10px 12px; 
-    border: 1px solid #d1d5db; 
-    border-radius: 6px; 
+    padding: 8px 10px; 
+    border: 1px solid var(--border-color); 
+    border-radius: 4px; 
     font-size: 14px; 
     box-sizing: border-box; 
     transition: all 0.2s ease;
@@ -310,16 +388,9 @@ const resetSelection = () => {
 .search-input:focus { 
     outline: none; 
     border-color: var(--primary); 
-    box-shadow: 0 0 0 3px rgba(11, 116, 229, 0.15); 
+    box-shadow: 0 0 0 2px rgba(11, 116, 229, 0.15); 
 }
 
-.district-context {
-    font-size: 12px;
-    color: #9ca3af;
-    white-space: nowrap;
-}
-
-.option-item.selected .district-context {
-    color: rgba(255, 255, 255, 0.8);
-}
+/* Loại bỏ CSS không dùng trong cấu trúc 2 cấp */
+.district-context { display: none; }
 </style>

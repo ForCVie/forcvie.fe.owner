@@ -10,14 +10,14 @@
         <div class="search_box col_3">
           <ul>
             <li>
-              <p>Tên tài khoản</p>
+              <p>Tên món ăn</p>
               <InputBase
                 v-model:modelValue="dataSearch.bannerNm"
                 id="bannerNm"
               />
             </li>
             <li>
-              <p>Họ tên</p>
+              <p>Mục lục</p>
               <InputBase v-model:modelValue="dataSearch.url" id="url" />
             </li>
             <li>
@@ -176,21 +176,21 @@ const columnDefs = ref([
     }
   },
   {
-    headerName: "Ảnh",
+    headerName: "Tên món",
     field: "bannerNm",
     cellRenderer: LinkGridComponent,
     cellRendererParams: { onCustomEvent: goAction },
   },
   {
-    headerName: "Tên món",
-    field: "url",
+    headerName: "Mục lục",
+    field: "useYn",
     cellStyle: {
       textAlign: "center",
     },
   },
   {
-    headerName: "Mục lục",
-    field: "useYn",
+    headerName: "Ngày tạo",
+    field: "url",
     cellStyle: {
       textAlign: "center",
     },

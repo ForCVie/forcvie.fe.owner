@@ -2113,7 +2113,16 @@ export default defineComponent({
         {label: 'dept2', link: '/banner'}
       ],
       isOn1:true,
-      selectedAddress: {},
+      selectedAddress: {
+        "province": {
+          "name": "Tỉnh An Giang",
+          "id": 17
+        },
+        "ward": {
+          "name": "Xã Ba Chúc",
+          "id": 10257
+        }
+      },
       menuItemList: [
         {
           "cdId": "1",
