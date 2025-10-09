@@ -37,6 +37,8 @@
               if (this.params.className) {
                   this.className = this.params.className;
               }
+              console.log(this.params);
+              
               this.id = this.params.data[this.params.id];
               this.type = this.params.type;
               this.orgName = this.params.orgName;
@@ -67,17 +69,17 @@
       methods: {
           addEvent() {
               if (typeof this.params.onCustomEvent === 'function') {
-                if (this.roleStore.flag) {
+                // if (this.roleStore.flag) {
                     this.params.onCustomEvent(this.params.data)
-                } else {
-                    Swal.fire({
-                    text: this.t("common.message.warring"),
-                    showCancelButton: false,
-                    confirmButtonColor: "#DD6B55",
-                    confirmButtonText: "확인",
-                    cancelButtonText: "취소",
-                    });
-                }
+                // } else {
+                //     Swal.fire({
+                //     text: this.t("common.message.warring"),
+                //     showCancelButton: false,
+                //     confirmButtonColor: "#DD6B55",
+                //     confirmButtonText: "확인",
+                //     cancelButtonText: "취소",
+                //     });
+                // }
               }
               if(this.type == TYPE_BUTTON_DOWLOAD) {
                   const refFile = this.$refs[this.childRef];

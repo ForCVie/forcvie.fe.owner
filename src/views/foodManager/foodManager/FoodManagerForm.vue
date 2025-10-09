@@ -88,6 +88,7 @@ import {
 } from "@/constants/common.const";
 import router from "@/router";
 import { employeeManagerRoute } from "@/router/routeItems/employeeManagerRoute";
+import { foodManagerRoute } from "@/router/routeItems/foodManagerRoute";
 import { commonStore } from "@/stores/common";
 import { getListCodeMng } from "@/stores/common/codeMng/codeMng.service";
 import { CodeMngModel } from "@/stores/common/codeMng/codeMng.type";
@@ -136,7 +137,7 @@ const closeModal = (index: number) => {
 }
 
 const back = () => {
-  router.push({ path: employeeManagerRoute.employeeManager.path });
+  router.push({ path: foodManagerRoute.foodManager.path });
 };
 
 const onSave = async () => {

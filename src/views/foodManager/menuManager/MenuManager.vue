@@ -57,7 +57,6 @@
       <div class="box_inner">
         <GridComponentV2
           :rowData="data"
-          :rowHeight="150"
           :columnDefs="columnDefs"
           :paginationClientFlag="false"
           :paginationPageSize="paginationPageSize"
@@ -104,22 +103,16 @@
 </template>
 
 <script setup lang="ts">
-import BtnGridComponent from "@/components/common/grid/BtnGridComponent.vue";
 import CheckboxGrid from "@/components/common/grid/CheckboxGrid.vue";
-import ImgGridComponent from "@/components/common/grid/ImgGridComponent.vue";
 import LinkGridComponent from "@/components/common/grid/LinkGridComponent.vue";
 import InputBase from "@/components/common/input/InputBase.vue";
-import { UP_CD_USE_YN } from "@/constants/common.const";
 import {
-  MODE_CREATE,
   PAGINATION_PAGE_SIZE,
   PAGINATION_PAGE_SIZE_SELECTOR,
 } from "@/constants/screen.const";
 import router from "@/router";
-import { employeeManagerRoute } from "@/router/routeItems/employeeManagerRoute";
 import { foodManagerRoute } from "@/router/routeItems/foodManagerRoute";
 import { commonStore } from "@/stores/common";
-import { getListCodeMng } from "@/stores/common/codeMng/codeMng.service";
 import { CodeMngModel } from "@/stores/common/codeMng/codeMng.type";
 // import { getPageData } from "@/stores/promotionMng/bannerMng/bannerMng.service";
 import {
@@ -166,27 +159,10 @@ const columnDefs = ref([
     flex:.3
   },
   {
-    headerName: "Ảnh",
-    field: "img",
-    cellRenderer: ImgGridComponent,
-    cellRendererParams: (params) => {
-      return {
-        img: params.data.img,
-      }
-    }
-  },
-  {
-    headerName: "Tên món",
+    headerName: "Tên thực đơn",
     field: "bannerNm",
     cellRenderer: LinkGridComponent,
     cellRendererParams: { onCustomEvent: goAction },
-  },
-  {
-    headerName: "Mục lục",
-    field: "useYn",
-    cellStyle: {
-      textAlign: "center",
-    },
   },
   {
     headerName: "Ngày tạo",
@@ -237,13 +213,13 @@ onBeforeMount(async () => {
 
 const goActionCreate = () => {
   router.push({
-    name: foodManagerRoute.foodManagerForm.name,
+    name: foodManagerRoute.menuManagerForm.name,
   });
 };
 
 function goAction(data: AdBannerResDTO) {
   router.push({
-    name: foodManagerRoute.foodManagerForm.name,
+    name: foodManagerRoute.menuManagerForm.name,
     state: { id: data.bannerSeq },
   });
 }
@@ -253,7 +229,6 @@ const fnPagination = async (pageNumber: number, pagesSize: number) => {
   dataSearch.value.size = pagesSize;
   data.value = [
     {
-      img: "https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1597822154096-LK0WD8P39LYLJAG0PXJ6/chup-anh-thuc-an-1.jpg",
       rowNum: 1,
       bannerNm: "Test Banner",
       url: "http://example.com",

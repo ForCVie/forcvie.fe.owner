@@ -1,4 +1,14 @@
 export const foodManagerRoute = {
+    sizeManager: {
+        path: "/food-manager/size-manager",
+        name: "sizeManager",
+        component: import("@/views/foodManager/sizeManager/SizeManager.vue"),
+    },
+    categoryManager: {
+        path: "/food-manager/category-manager",
+        name: "categoryManager",
+        component: import("@/views/foodManager/categoryManager/CategoryManager.vue"),
+    },
     foodManager: {
         path: "/food-manager/food-manager",
         name: "foodManager",
