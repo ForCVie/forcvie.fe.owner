@@ -14,10 +14,5 @@ export const storeManagerRoute = {
         name: "storeManagerReview",
         param: "",
         component: import("@/views/storeManager/storeManager/StoreManagerReview.vue"),
-    },
-    seatManager: {
-        path: "/store-manager/seat-manager",
-        name: "seatManager",
-        component: import("@/views/storeManager/seatManager/SeatManager.vue")
     }
 };

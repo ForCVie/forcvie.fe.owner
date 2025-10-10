@@ -32,7 +32,7 @@ import { commonStore } from "@/stores/common";
 const { t } = useI18n();
 const store = commonStore();
 
-const pageTitle = ref(`Quản lý Danh Mục - Sản Phẩm`);
+const pageTitle = ref(`Quản lý tầng - bàn`);
 const breadcrumbItems = ref([
   { label: t("talentEduGoalsMng.breadcrumb.01"), link: "/" },
 ]);

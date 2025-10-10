@@ -5,6 +5,7 @@ import {storeManagerRoute} from "@/router/routeItems/storeManagerRoute";
 import { storeOrderRoute } from './routeItems/storeOrderRoute';
 import { employeeManagerRoute } from './routeItems/employeeManagerRoute';
 import { foodManagerRoute } from './routeItems/foodManagerRoute';
+import { seatManagerRoute } from './routeItems/seatManagerRoute';
 
 const getView = (path: any) => {
   return () => import(`@/views/${path}.vue`);
@@ -37,6 +38,7 @@ export const routes = [
       ...getRouteItems(storeOrderRoute),
       ...getRouteItems(employeeManagerRoute),
       ...getRouteItems(foodManagerRoute),
+      ...getRouteItems(seatManagerRoute)
     ],
   },
   // {

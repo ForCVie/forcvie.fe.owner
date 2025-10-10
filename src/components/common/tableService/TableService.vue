@@ -3,7 +3,8 @@
     <div
       v-for="index in totalSeats"
       :key="index"
-      class="grid-item"
+      class="grid-item cursor"
+      @click="openModal(0)"
     >
       <div class="cell-content">
         <div class="circle" v-if="index == totalSeats">+</div>
@@ -12,10 +13,27 @@
       </div>
     </div>
   </div>
+  <!-- Start Popup Select Food -->
+  <ModalSeatManager :isOpen="modalOpen[0]" :dataSelect="dataSelect" @closeModal="closeModal(0)" @confirmAction="closeModal(0)"
+      @cancelAction="closeModal(0)" />
+  <!-- End Popup Select Food -->
 </template>
 
-<script setup>
+<script setup lang="ts">
+import ModalSeatManager from '@/views/seatManager/seatManager/popup/ModalSeatManager.vue';
+
 const totalSeats = 12;
+
+const dataSelect = ref();
+
+const modalOpen = ref([false]);
+
+const openModal = (index: number) => {
+  modalOpen.value[index] = true
+}
+const closeModal = (index: number) => {
+  modalOpen.value[index] = false
+}
 </script>
 
 <style scoped>
