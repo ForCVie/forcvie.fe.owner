@@ -96,6 +96,7 @@ import { useRoute, useRouter } from "vue-router";
 import { getUserInfo, removeUserInfo } from "@/utils/storage";
 import LoadingComponent from "@/components/common/loading/LoaddingComponent.vue";
 import TNavTree from "./TNavTree.vue";
+import CommonService from "@/service/common/CommonService";
 
 const store = commonStore();
 // const roleStore = checkFlagStore()
@@ -135,46 +136,46 @@ onBeforeMount(async () => {
 const menuData = ref([]);
 
 const getMenu = async () => {
-  const menuJson = [
-    { menuId: "CMM000000000000001", parentId: "", nm: "Quản Lý Quyền", icon: "homepage.png" },
-    {
-      menuId: "CMM000000000000002",
-      parentId: "CMM000000000000001",
-      route: "/template",
-      nm: "QL Resource",
-    },
-    {
-      menuId: "CMM000000000000003",
-      parentId: "CMM000000000000001",
-      route: "/",
-      nm: "QL Role",
-    },
-    { menuId: "CMM000000000000006", parentId: "", nm: "Quản Lý Promotional" , icon: "demo1.png"},
-    {
-      menuId: "CMM000000000000007",
-      parentId: "CMM000000000000006",
-      nm: "Hiển Thị Footer",
-    },
-    { menuId: "CMM000000000000012", parentId: "", nm: "Quản Lý Chính Sách", icon: "demo2.png" },
-    {
-      menuId: "CMM000000000000013",
-      parentId: "CMM000000000000012",
-      nm: "Chính Sách Cửa Hàng",
-    },
-  ];
-  // await CommonService
-  //     .menu()
-  //     .then(async (response) => {
-  //       if (response.status == 200) {
-  //         console.log(response.data);
-  // menuData.value = buildTree(response.data.data)
-  menuData.value = buildTree(menuJson);
+  // const menuJson = [
+  //   { menuId: "CMM000000000000001", parentId: "", nm: "Quản Lý Quyền", icon: "homepage.png" },
+  //   {
+  //     menuId: "CMM000000000000002",
+  //     parentId: "CMM000000000000001",
+  //     route: "/template",
+  //     nm: "QL Resource",
+  //   },
+  //   {
+  //     menuId: "CMM000000000000003",
+  //     parentId: "CMM000000000000001",
+  //     route: "/",
+  //     nm: "QL Role",
+  //   },
+  //   { menuId: "CMM000000000000006", parentId: "", nm: "Quản Lý Promotional" , icon: "demo1.png"},
+  //   {
+  //     menuId: "CMM000000000000007",
+  //     parentId: "CMM000000000000006",
+  //     nm: "Hiển Thị Footer",
+  //   },
+  //   { menuId: "CMM000000000000012", parentId: "", nm: "Quản Lý Chính Sách", icon: "demo2.png" },
+  //   {
+  //     menuId: "CMM000000000000013",
+  //     parentId: "CMM000000000000012",
+  //     nm: "Chính Sách Cửa Hàng",
+  //   },
+  // ];
+  await CommonService
+      .menu()
+      .then(async (response) => {
+        if (response.status == 200) {
+          console.log(response.data);
+  menuData.value = buildTree(response.data.data)
+  // menuData.value = buildTree(menuJson);
   // subMenus.value = response.data.data
-  //   }
-  // })
-  // .catch((e) => {
-  //   console.log(e)
-  // })
+    }
+  })
+  .catch((e) => {
+    console.log(e)
+  })
 };
 
 function buildTree(menuList: any, parentId = "") {
