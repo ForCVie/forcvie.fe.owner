@@ -7,12 +7,12 @@
     >
       <!-- Nếu có con: Tạo nhóm có toggle -->
       <div v-if="item.children.length" :class="`nav-item ${item.menuId == 'CMM000000000000001' ? 'select' :''}`" @click="toggle(item.menuId)">
-        <IconBase v-if="item.icon" :icon="item.icon" />  <span class="mg_l10 fade-in" :class="{ show: isOpenMenu }">{{ item.nm }} <div class="menu_toggle" :class="{active: isOpen[item.menuId]}"></div></span>
+        <IconBase :icon="item.icon" />  <span class="mg_l10 fade-in" :class="{ show: isOpenMenu }">{{ item.nm }} <div class="menu_toggle" :class="{active: isOpen[item.menuId]}"></div></span>
       </div>
       <!-- Nếu không có con: Link đơn -->
       <a
         v-else
-        :href="item.route"
+        href="javascript:void(0);"
         @click="goToMenu(item.route, item.name)"
         class="nav-item"
       >
@@ -57,7 +57,10 @@ export default defineComponent({
     };
 
     const goToMenu = (path, name) => {
-      router.push({ path, name });
+      router.push({
+        name: name,
+        path: path
+      });
     };
 
     const checkPathSelectItem = (name) => {

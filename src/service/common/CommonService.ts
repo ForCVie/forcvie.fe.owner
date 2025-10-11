@@ -10,7 +10,7 @@ class CommonService {
   }
 
   menu(): Promise<any> {
-    return http.get('/cmmn/menu/nav-tree')
+    return http.get('/cmmn/menu/nav-tree-owner')
   }
 
   resetResource(): Promise<any> {

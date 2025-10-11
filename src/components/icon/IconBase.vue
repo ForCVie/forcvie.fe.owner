@@ -24,7 +24,7 @@ const props = defineProps({
 
 const { width, height, icon } = props;
 
-const iconPath = `/src/assets/images/menu_icon/${props.icon}`
+const iconPath = `/src/assets/images/menu_icon/${props.icon?props.icon:'homepage.png'}`
 </script>
 
 <style scoped>
