@@ -1,9 +1,6 @@
 <template>
   <section id="content" class="content_wrapper grid_content" tabindex="0">
-    <Breadcrumb
-      :pageTitle="pageTitle"
-      :breadcrumbItems="breadcrumbItems"
-    ></Breadcrumb>
+    <Breadcrumb :pageTitle="pageTitle" :breadcrumbItems="breadcrumbItems" />
 
     <div class="box dp_block">
       <div class="box_section">
@@ -14,84 +11,120 @@
           </colgroup>
           <tbody>
             <tr>
-                <!-- Tự động gen -->
               <th scope="row" class="required">Tên món ăn</th>
               <td class="td_input">
-                <InputBase
-                  id="nm"
-                  required
-                />
+                <InputBase v-model:modelValue="dataDetail.name" id="nm" required />
               </td>
             </tr>
+
             <tr>
               <th scope="row" class="required">Mục lục</th>
               <td>
                 <div class="dp_flex al_center">
-                  <SelectBoxBaseSearch />
+                  <SelectBoxBaseSearch
+                    id="categorySeq"
+                    name="categorySeq"
+                    v-model="dataDetail.categorySeq"
+                    :data="listCategory"
+                    :value-select-all="t('common.select')"
+                  />
                   <div>
                     <ButtonBase
                       class="button btn_xs btn_blue wd_100 ml-2"
-                      @click="openModal(0)" >Thêm mục lục</ButtonBase>
+                      @click="openModal(0)"
+                    >
+                      Thêm mục lục
+                    </ButtonBase>
                   </div>
                 </div>
               </td>
             </tr>
+
             <tr>
               <th scope="row" class="required">Size</th>
               <td>
-                <div v-for="option in listStore" >
-                  <CheckboxBase :key="option.cdId" :value="option.cdId"
-                                :label="option.cdNm" :id="`${option.cdId}_${id}`" :name="option.id" @change="changOne" :is-disable="isDisable"
-                                >
-                  </CheckboxBase>
+                <div class="dp_flex al_center">
+                  <SelectBoxBaseSearch
+                    id="sizeSeq"
+                    name="sizeSeq"
+                    v-model="dataDetail.sizeSeq"
+                    :data="listSize"
+                    :value-select-all="t('common.select')"
+                  />
+                  <div>
+                    <ButtonBase
+                      class="button btn_xs btn_blue wd_100 ml-2"
+                      @click="openModal(1)"
+                    >
+                      Thêm size
+                    </ButtonBase>
+                  </div>
                 </div>
-              </td>  
-            </tr> 
+              </td>
+            </tr>
+
             <tr>
               <th scope="row" class="required">Ảnh món ăn</th>
               <td>
-                <InputFileBase/>
-              </td>  
-            </tr> 
+                <!-- <InputFileBase v-model="dataDetail.imageUrl" /> chưa làm--> 
+              </td>
+            </tr>
+
+            <tr>
+              <th scope="row" class="required">Giá</th>
+              <td class="td_input">
+                <InputBase
+                  v-model:modelValue="dataDetail.price"
+                  id="price"
+                  required
+                  :is-number="true"
+                  :min-value="0"
+                  :decimal-places="0"
+                />
+              </td>
+            </tr>
+
             <tr>
               <th scope="row" class="required">Mô tả</th>
               <td>
-                <QuillEditor />
+                <QuillEditor v-model="dataDetail.description" />
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-      <div class="box_section">
-        <div class="btn_area">
-          <ButtonBase type="button" class="button btn_xs btn_white" @click="back()">
-            {{ t("common.list") }}
-          </ButtonBase>
-          <ButtonBase type="button" class="button btn_xs btn_blue" @click="onSave">
-            {{ t("common.save") }}
-          </ButtonBase>
-        </div>
+
+    <div class="box_section">
+      <div class="btn_area">
+        <ButtonBase type="button" class="button btn_xs btn_white" @click="back()">
+          {{ t("common.list") }}
+        </ButtonBase>
+        <ButtonBase type="button" class="button btn_xs btn_blue" @click="onSave">
+          {{ t("common.save") }}
+        </ButtonBase>
       </div>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { useAlert, useConfirm } from "@/components/common/composables/useAlert";
 import InputBase from "@/components/common/input/InputBase.vue";
-import ListCheckBoxBase from "@/components/common/input/ListCheckBoxBase.vue";
 import SelectBoxBaseSearch from "@/components/common/input/SelectBoxBaseSearch.vue";
-import {
-  STATE_N,
-  UP_CD_SITE,
-  UP_CD_USE_YN,
-} from "@/constants/common.const";
+import InputFileBase from "@/components/common/input/InputFileBase.vue";
 import router from "@/router";
-import { employeeManagerRoute } from "@/router/routeItems/employeeManagerRoute";
 import { foodManagerRoute } from "@/router/routeItems/foodManagerRoute";
 import { commonStore } from "@/stores/common";
-import { getListCodeMng } from "@/stores/common/codeMng/codeMng.service";
-import { CodeMngModel } from "@/stores/common/codeMng/codeMng.type";
+import { STATE_N } from "@/constants/common.const";
+
+// Gọi API thực tế
+import { getAllCategories } from "@/stores/foodOrder/productCategory/productCategory.service";
+import { getLstAll } from "@/stores/foodOrder/sizeMng/sizeMng.service";
+import { useAlert, useConfirm } from "@/components/common/composables/useAlert";
+import { PAGINATION_PAGE_SIZE } from "@/constants/screen.const";
+import { OwnerProductCategoryFilterReq } from "@/stores/foodOrder/productCategory/productCategory.type";
+import { saveData } from "@/stores/foodOrder/productMng/productMng.service";
+import { OwnerProductReq } from "@/stores/foodOrder/productMng/productMng.type";
 
 const { t } = useI18n();
 const store = commonStore();
@@ -99,42 +132,60 @@ const alert = useAlert();
 const confirm = useConfirm();
 
 const id = ref<string>();
-
 const pageTitle = ref("Quản lý món ăn");
-const breadcrumbItems = ref([
-  { label: t("talentEduGoalsMng.breadcrumb.01"), link: "/" },
-]);
-
-const listRole = ref<CodeMngModel[]>([{
-  cdId: "ROLE_ADMIN",
-  cdNm: "Quản trị viên",
-  upCdId: UP_CD_USE_YN,
-}, {
-  cdId: "ROLE_USER",
-  cdNm: "Người dùng",
-  upCdId: UP_CD_USE_YN,
-}]);
-const listStore = ref<CodeMngModel[]>([{
-  cdId: "STORE_1",
-  cdNm: "Cửa hàng 1",
-  upCdId: UP_CD_SITE,
-}, {
-  cdId: "STORE_2",
-  cdNm: "Cửa hàng 2",
-  upCdId: UP_CD_SITE,
-}]);
-
+const breadcrumbItems = ref([{ label: pageTitle.value, link: "/" }]);
 const modalOpen = ref([false]);
 
+// Dữ liệu chi tiết món ăn
+const dataDetail = ref({
+  delYn: STATE_N,
+  name: "",
+  categorySeq: "",
+  foodStoreSeq: "",
+  sizeSeq: "",
+  price: 0,
+  description: "",
+  imageUrl: null
+});
+
+// Danh sách danh mục và size
+const listCategory = ref<{ cdId: string; cdNm: string }[]>([]);
+const listSize = ref<{ cdId: string; cdNm: string }[]>([]);
+const dataSearch = ref<OwnerProductCategoryFilterReq>({
+  name: "",
+  foodStoreSeq: "", // TODO: Lấy từ store của owner
+  page: 1,
+  size: PAGINATION_PAGE_SIZE,
+  sort: "",
+});
 onBeforeMount(async () => {
+  store.setLoading(true);
+  try {
+    // Lấy danh sách mục lục (category)
+    const categoryRes = await getAllCategories(dataSearch.value);
+    listCategory.value = categoryRes.data.data.map((c: any) => ({
+      cdId: c.categorySeq,
+      cdNm: c.name,
+    }));
+    listCategory.value.unshift({ cdId: "", cdNm: t("common.select") });
+
+    // Lấy danh sách size
+    const sizeRes = await getLstAll(dataSearch.value);
+    listSize.value = sizeRes.data.data.map((s: any) => ({
+      cdId: s.sizeSeq,
+      cdNm: s.name,
+    }));
+    listSize.value.unshift({ cdId: "", cdNm: t("common.select") });
+  } catch (e) {
+    console.error("Lỗi load danh sách:", e);
+  } finally {
+    store.setLoading(false);
+  }
 });
 
 const openModal = (index: number) => {
-  modalOpen.value[index] = true
-}
-const closeModal = (index: number) => {
-  modalOpen.value[index] = false
-}
+  modalOpen.value[index] = true;
+};
 
 const back = () => {
   router.push({ path: foodManagerRoute.foodManager.path });
@@ -149,22 +200,15 @@ const onSave = async () => {
     );
     return;
   }
-  confirm(
-    t("common.message.confirmSave"),
-    t("common.confirmTitle"),
-    async () => {
 
-    }
-  );
-};
-
-const onRemove = async () => {
-  confirm(
-    t("common.message.confirmDelete"),
-    t("common.confirmTitle"),
-    async () => {
-        
-    }
-  );
+  confirm(t("common.message.confirmSave"), t("common.confirmTitle"), async () => {
+      const dataSave = {
+        ...dataDetail.value,
+      } as OwnerProductReq;
+    await saveData(dataSave);
+    alert(t("common.message.saveSuccess"), t("common.alertTitle"), () => {
+      back();
+    });
+  });
 };
 </script>

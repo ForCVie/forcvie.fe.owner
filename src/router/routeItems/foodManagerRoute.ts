@@ -4,10 +4,10 @@ export const foodManagerRoute = {
         name: "sizeManager",
         component: import("@/views/foodManager/sizeManager/SizeManager.vue"),
     },
-    categoryManager: {
-        path: "/food-manager/category-manager",
-        name: "categoryManager",
-        component: import("@/views/foodManager/categoryManager/CategoryManager.vue"),
+    productCategoryManager: {
+        path: "/food-manager/product-category-manager",
+        name: "productCategoryManager",
+        component: import("@/views/foodManager/productCategoryManager/ProductCategoryManager.vue"),
     },
     foodManager: {
         path: "/food-manager/food-manager",

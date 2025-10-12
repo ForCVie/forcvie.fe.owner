@@ -8,7 +8,7 @@
           <ul>
             <li>
               <p>Tên Kích Cỡ</p>
-              <InputBase v-model:modelValue="dataSearch.name" id="sizeNameSearch" @keyup.enter="searchFormData"/>
+              <InputBase v-model:modelValue="dataSearch.name" id="sizeNameSearch" @keyup.enter="searchFormData" />
             </li>
           </ul>
         </div>
@@ -25,13 +25,8 @@
 
     <div class="box dp_block">
       <div class="box_inner">
-        <GridComponentV2 
-          :rowData="data" 
-          :columnDefs="columnDefs" 
-          :paginationClientFlag="false"
-          :paginationPageSize="paginationPageSize" 
-          @customPagination="fnPagination" 
-          :totalRecord="totalRecord"
+        <GridComponentV2 :rowData="data" :columnDefs="columnDefs" :paginationClientFlag="false"
+          :paginationPageSize="paginationPageSize" @customPagination="fnPagination" :totalRecord="totalRecord"
           :paginationPageSizeSelector="paginationPageSizeSelector">
           <template #button>
             <div>
@@ -45,11 +40,7 @@
     </div>
 
     <!-- Popup Thêm/Sửa Kích Cỡ -->
-    <ModalSizeForm 
-        v-if="isModalOpen"
-      :isOpen="isModalOpen" 
-      :dataSelect="dataSelect" 
-      @closeModal="closeModal"
+    <ModalSizeForm v-if="isModalOpen" :isOpen="isModalOpen" :dataSelect="dataSelect" @closeModal="closeModal"
       @confirmAction="handleConfirmAction" />
   </section>
 </template>
@@ -66,6 +57,7 @@ import LinkGridComponent from "@/components/common/grid/LinkGridComponent.vue";
 import ButtonGridComponent from "@/components/common/grid/ButtonGridComponent.vue";
 import ModalSizeForm from "./popup/ModalSizeForm.vue";
 import { useAlert, useConfirm } from '@/components/common/composables/useAlert';
+import { log } from 'console';
 
 const { t } = useI18n();
 const store = commonStore();
@@ -90,9 +82,8 @@ const columnDefs = ref([
     headerName: "Tên Kích Cỡ",
     field: "name",
     cellRenderer: LinkGridComponent,
-    cellRendererParams: { onCustomEvent: (params: any) => openModalForEdit(params.data.sizeSeq), },
+    cellRendererParams: { onCustomEvent: (data: OwnerProductSizeResDTO) => openModalForEdit(data) },
   },
-  { headerName: "Mô tả", field: "description", flex: 1.5 },
   { headerName: "Ngày tạo", field: "createdDate", flex: 0.5, cellStyle: { textAlign: "center" } },
   {
     headerName: "Chức năng",
@@ -100,7 +91,7 @@ const columnDefs = ref([
     cellStyle: { textAlign: "center" },
     cellRenderer: ButtonGridComponent,
     cellRendererParams: {
-      onCustomEvent: (params: any) => onRemove(params.data.sizeSeq),
+      onCustomEvent: (data: OwnerProductSizeResDTO) => onRemove(data),
       className: "btn_round btn_xs btn_red",
       value: "Xóa"
     },
@@ -110,7 +101,7 @@ const columnDefs = ref([
 
 const dataSearch = ref<OwnerProductSizeFilterReq>({
   name: "",
-  foodStoreSeq: "STORE_001", // Lấy từ store của owner
+  foodStoreSeq: "",
   page: 1,
   size: PAGINATION_PAGE_SIZE,
   sort: "",
@@ -119,29 +110,21 @@ const dataSearch = ref<OwnerProductSizeFilterReq>({
 const data = ref<OwnerProductSizeResDTO[]>([]);
 
 onBeforeMount(() => {
-  searchFormData();
+  // searchFormData();
 });
 
 const fnPagination = async (pageNumber: number, pagesSize: number) => {
-  store.setLoading(true);
   dataSearch.value.page = pageNumber;
   dataSearch.value.size = pagesSize;
-  try {
-    const res = await getPageData(dataSearch.value);
+  await getPageData(dataSearch.value).then((res) => {
     totalRecord.value = res.data.data.totalRecord;
-    data.value = res.data.data.data.map((item: OwnerProductSizeResDTO, index: number) => ({
-      ...item,
-      rowNum: (dataSearch.value.page - 1) * dataSearch.value.size + index + 1,
-      // Format ngày tạo nếu cần
-      createdDate: item.createdDate ? new Date(item.createdDate).toLocaleDateString('vi-VN') : ''
-    }));
-  } catch (e) {
-    console.error(e);
-    data.value = [];
-    totalRecord.value = 0;
-  } finally {
-    store.setLoading(false);
-  }
+    data.value = res.data.data.data.map((item: OwnerProductSizeResDTO, index: number) => {
+      item.rowNum =
+        (dataSearch.value.page - 1) * dataSearch.value.size + index + 1,
+        item.createdDate = item.createdDate ? new Date(item.createdDate).toLocaleDateString('vi-VN') : '';
+      return item;
+    });
+  });
 };
 
 const searchFormData = () => {
@@ -173,18 +156,18 @@ const handleConfirmAction = () => {
   searchFormData(); // Load lại dữ liệu sau khi thêm/sửa thành công
 };
 
-const onRemove = async (id: string) => {
+const onRemove = async (item: OwnerProductSizeResDTO) => {
   confirm(
     t("common.message.confirmDelete"),
     t("common.confirmTitle"),
     async () => {
-      if (id) {
-        await removeData(id).then((res) => {
+      if (item.sizeSeq) {
+        await removeData(item.sizeSeq).then((res) => {
           alert(
             t("common.message.deleteSuccess"),
             t("common.alertTitle"),
             () => {
-              handleConfirmAction();
+              searchFormData();
             }
           );
         });

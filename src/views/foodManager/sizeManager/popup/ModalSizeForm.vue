@@ -27,10 +27,10 @@
 
         <!-- Footer -->
         <template #footer>
-            <button type="button" class="button btn_xl btn_white popup_close" @click="saveData()">
+            <button type="button" class="button btn_xl btn_white popup_close" @click="cancelAction()">
                 닫기
             </button>
-            <button type="button" class="button btn_xl btn_blue" @click="cancelAction">
+            <button type="button" class="button btn_xl btn_blue" @click="onSave()">
                 확인
             </button>
         </template>
@@ -39,32 +39,38 @@
 </template>
 
 <script setup lang="ts">
-import { OwnerProductSizeReq } from "@/stores/foodOrder/sizeMng/sizeMng.type";
+import { useAlert, useConfirm } from "@/components/common/composables/useAlert";
+import { commonStore } from "@/stores/common";
+import { getDataDetail, saveData } from "@/stores/foodOrder/sizeMng/sizeMng.service";
+import { OwnerProductSizeDetailDTO, OwnerProductSizeReq } from "@/stores/foodOrder/sizeMng/sizeMng.type";
 import { useI18n } from "vue-i18n";
 
 // i18n
 const { t } = useI18n();
+const store = commonStore();
+const alert = useAlert();
+const confirm = useConfirm();
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
     if (props.dataSelect) {
-        console.log("Edit size", props.dataSelect);
-    } else {
-        console.log("Create size");
+        const res = await getDataDetail(props.dataSelect);
+        formData.value = res.data.data as OwnerProductSizeDetailDTO;
     }
 });
 
 // Props từ component cha
 const props = defineProps({
     isOpen: { type: Boolean, default: false },
-    dataSelect: { type: Object }
+    dataSelect: { type: String, default: "" },
 });
 
 // Emit cho parent
 const emit = defineEmits(["closeModal", "clearFormSearch", "searchFormData", "confirmAction", "cancelAction"]);
+
 const formData = ref<OwnerProductSizeReq>({
     sizeSeq: "",
     name: "",
-    description: "",
+    delYn: "",
     foodStoreSeq: "",
 });
 
@@ -73,11 +79,30 @@ const closeModal = () => emit("closeModal");
 const confirmAction = () => emit("confirmAction");
 const cancelAction = () => emit("cancelAction");
 
-const saveData = async () => {
-    // Logic lưu dữ liệu
-    console.log("Lưu dữ liệu size");
-    const res = await getDataDetail(props.dataSelect!.sizeSeq);
-        formData.value = res.data.data as OwnerProductSizeDetailDTO;
-    confirmAction();
+const onSave = async () => {
+
+    if (store.check) {
+        alert(
+            t("common.messageValidateRequired"),
+            t("common.alertTitle"),
+            () => { }
+        );
+        return;
+    }
+    confirm(
+        t("common.message.confirmSave"),
+        t("common.confirmTitle"),
+        async () => {
+            const dataSave = {
+                ...formData.value,
+            } as OwnerProductSizeReq;
+            await saveData(dataSave).then((res) => {
+                alert(t("common.message.saveSuccess"), t("common.alertTitle"), () => {
+                    // closeModal();
+                    confirmAction();
+                });
+            });
+        }
+    );
 };
 </script>

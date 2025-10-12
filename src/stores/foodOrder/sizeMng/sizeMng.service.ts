@@ -19,3 +19,7 @@ export const saveData = (data: OwnerProductSizeReq) => {
 export const removeData = (data: string) => {
   return http.post(url + '/remove', data);
 };
+
+export const getLstAll = (data: OwnerProductSizeFilterReq) => {
+  return http.post(url + '/list-all', data);
+};
