@@ -8,6 +8,7 @@ export type OwnerProductResDTO = {
   imageUrl?: string; // URL ảnh
   rowNum: number;
   checkedFlag: boolean;
+  price: number;
 };
 
 // DTO cho request filter/search sản phẩm

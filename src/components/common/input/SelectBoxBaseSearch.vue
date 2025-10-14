@@ -1,21 +1,17 @@
 <template>
   <span class="is_disabled" v-if="isDisable">{{ searchQuery }}</span>
   <div v-else class="group_checkbox">
-    <input :value="showValue" @click="focus" class="select_component_custom" :class="{on:showList}" ref="checkboxInput"
-        readonly>
+    <input :value="showValue" @click="focus" class="select_component_custom" :class="{ on: showList }"
+      ref="checkboxInput" readonly>
     <!-- <input v-model="searchQuery" @keyup="changData($event)" @click="focus" class="select_component_custom" ref="checkboxInput"> -->
     <teleport to="#app" v-if="showList">
-      <ul
-          class="list_select_custom"
-          :class="{on:showList}"
-          :style="{ width: `${widthUl}px`,top:`${topUl}px`,left:`${leftUl}px`,right:'auto'}"
-          ref="ulPosition"
-      >
+      <ul class="list_select_custom" :class="{ on: showList }"
+        :style="{ width: `${widthUl}px`, top: `${topUl}px`, left: `${leftUl}px`, right: 'auto' }" ref="ulPosition">
         <li>
           <input v-model="searchQuery" @keyup="changData($event)" class="search_drop_down">
         </li>
-        <li v-for="option in filteredOptions" :class="{'selected' : option.cdNm == showValue}" :key="option.cdId"
-            @click="selectOption(option)">
+        <li v-for="option in filteredOptions" :class="{ 'selected': option.cdNm == showValue }" :key="option.cdId"
+          @click="selectOption(option)">
           {{ option.cdNm }}
         </li>
         <li v-if="filteredOptions?.length === 0" class="disabled" @click="hideList">
@@ -27,7 +23,7 @@
 </template>
 <script lang="ts">
 import { CodeMngModel } from '@/stores/common/codeMng/codeMng.type';
-import {ref, computed, defineProps, defineEmits, onMounted, onUpdated, onBeforeUnmount, nextTick} from 'vue';
+import { ref, computed, defineProps, defineEmits, onMounted, onUpdated, onBeforeUnmount, nextTick } from 'vue';
 
 export default {
   props: {
@@ -67,7 +63,7 @@ export default {
     if (this.valueSelect && this.data?.length)
       this.showValue = this.data?.find(item => item.cdId == this.valueSelect)?.cdNm || "";
   },
-  setup(props, {emit}) {
+  setup(props, { emit }) {
     const searchQuery = ref('');
     const showDropdown = ref(false);
     const showList = ref(false)
@@ -93,13 +89,13 @@ export default {
 
       searchQuery.value = query
       query = query.toLowerCase();
-      if (query === props.valueSelectAll) {
+      if (query === props.valueSelectAll.toLowerCase()) {
         query = ""
       }
 
       return props?.data?.filter(option => {
         const cdNm = (option.cdNm || "").toLowerCase();
-        return cdNm.includes(query) || cdNm.includes(props.valueSelectAll);
+        return cdNm.includes(query) || cdNm.includes(props.valueSelectAll.toLowerCase());
       });
     });
 
@@ -172,8 +168,8 @@ export default {
       this.showDropdown = false;
       this.showList = false
 
-      if(this.showValue !== this.valueSelectAll) {
-        if(option.cdNm===this.valueSelectAll) {
+      if (this.showValue !== this.valueSelectAll) {
+        if (option.cdNm === this.valueSelectAll) {
           this.showDropdown = true;
           this.showList = true
         }

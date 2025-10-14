@@ -105,26 +105,34 @@
         </ButtonBase>
       </div>
     </div>
+    
+    <!-- Popup Thêm/Sửa Kích Cỡ -->
+    <ModalSizeForm v-if="modalOpen[0]" :isOpen="modalOpen[0]" @closeModal="closeModal(0)"
+      @confirmAction="saveSize" />
+    <!-- Popup Thêm/Sửa Danh Mục -->
+    <ModalProductCategoryForm v-if="modalOpen[1]" :isOpen="modalOpen[1]" @closeModal="closeModal(1)"
+      @confirmAction="saveCategory" />
   </section>
 </template>
 
 <script setup lang="ts">
 import InputBase from "@/components/common/input/InputBase.vue";
 import SelectBoxBaseSearch from "@/components/common/input/SelectBoxBaseSearch.vue";
-import InputFileBase from "@/components/common/input/InputFileBase.vue";
+import { STATE_N } from "@/constants/common.const";
 import router from "@/router";
 import { foodManagerRoute } from "@/router/routeItems/foodManagerRoute";
 import { commonStore } from "@/stores/common";
-import { STATE_N } from "@/constants/common.const";
 
 // Gọi API thực tế
-import { getAllCategories } from "@/stores/foodOrder/productCategory/productCategory.service";
-import { getLstAll } from "@/stores/foodOrder/sizeMng/sizeMng.service";
 import { useAlert, useConfirm } from "@/components/common/composables/useAlert";
 import { PAGINATION_PAGE_SIZE } from "@/constants/screen.const";
+import { getAllCategories } from "@/stores/foodOrder/productCategory/productCategory.service";
 import { OwnerProductCategoryFilterReq } from "@/stores/foodOrder/productCategory/productCategory.type";
 import { saveData } from "@/stores/foodOrder/productMng/productMng.service";
 import { OwnerProductReq } from "@/stores/foodOrder/productMng/productMng.type";
+import { getLstAll } from "@/stores/foodOrder/sizeMng/sizeMng.service";
+import ModalSizeForm from "../sizeManager/popup/ModalSizeForm.vue";
+import ModalProductCategoryForm from "../productCategoryManager/popup/ModalProductCategoryForm.vue";
 
 const { t } = useI18n();
 const store = commonStore();
@@ -134,7 +142,7 @@ const confirm = useConfirm();
 const id = ref<string>();
 const pageTitle = ref("Quản lý món ăn");
 const breadcrumbItems = ref([{ label: pageTitle.value, link: "/" }]);
-const modalOpen = ref([false]);
+const modalOpen = ref([false, false]);
 
 // Dữ liệu chi tiết món ăn
 const dataDetail = ref({
@@ -188,9 +196,12 @@ const openModal = (index: number) => {
 };
 
 const back = () => {
-  router.push({ path: foodManagerRoute.foodManager.path });
+  router.push({ path: foodManagerRoute.menuManager.path });
 };
 
+const closeModal = (index: number) => {
+  modalOpen.value[index] = false
+}
 const onSave = async () => {
   if (store.check) {
     alert(
@@ -210,5 +221,28 @@ const onSave = async () => {
       back();
     });
   });
+};
+const saveSize = () => {
+  // Cập nhật lại danh sách size sau khi thêm/sửa
+  getLstAll(dataSearch.value).then((res) => {
+    listSize.value = res.data.data.map((s: any) => ({
+      cdId: s.sizeSeq,
+      cdNm: s.name,
+    }));
+    listSize.value.unshift({ cdId: "", cdNm: t("common.select") });
+  });
+  closeModal(0);
+};
+
+const saveCategory = () => {
+  // Cập nhật lại danh sách category sau khi thêm/sửa
+  getAllCategories(dataSearch.value).then((res) => {
+    listCategory.value = res.data.data.map((c: any) => ({
+      cdId: c.categorySeq,
+      cdNm: c.name,
+    }));
+    listCategory.value.unshift({ cdId: "", cdNm: t("common.select") });
+  });
+  closeModal(1);
 };
 </script>

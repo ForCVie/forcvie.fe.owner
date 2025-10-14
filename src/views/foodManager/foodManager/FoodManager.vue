@@ -18,7 +18,10 @@
             <li>
               <p>Trạng thái</p>
               <RadiobuttonBase v-for="item in listUseYn" :key="item.cdId" :value="item.cdId" v-model="dataSearch.useYn"
-                :id="`useYn_${item.cdId}`" :name="`useYn_search`" :label="`${item.cdNm}`" />
+                :id="`useYn_${item.cdId}`" :name="`user_search`" :label="`${item.cdNm}`"
+                :checked="item.cdId == dataSearch.useYn">
+                Checkbox 1
+              </RadiobuttonBase>
             </li>
           </ul>
         </div>
@@ -61,22 +64,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { useAlert, useConfirm } from '@/components/common/composables/useAlert';
 import router from "@/router";
 import { commonStore } from "@/stores/common";
-import { useAlert, useConfirm } from '@/components/common/composables/useAlert';
+import { onBeforeMount, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Constants and Utils
 import { UP_CD_USE_YN } from "@/constants/common.const";
 import { PAGINATION_PAGE_SIZE, PAGINATION_PAGE_SIZE_SELECTOR } from "@/constants/screen.const";
-import { getListCodeMng } from "@/stores/common/codeMng/codeMng.service";
 import { foodManagerRoute } from "@/router/routeItems/foodManagerRoute"; // Thay thế bằng route của bạn
+import { getListCodeMng } from "@/stores/common/codeMng/codeMng.service";
 
 // Services & Types
-import { getPageData, activateProducts, deactivateProducts, removeProducts } from '@/stores/foodOrder/productMng/productMng.service';
-import type { OwnerProductFilterReq, OwnerProductResDTO, OwnerProductActionReq } from '@/stores/foodOrder/productMng/productMng.type';
 import { getAllCategories } from '@/stores/foodOrder/productCategory/productCategory.service'; // Lấy service từ file danh mục
+import { activateProducts, deactivateProducts, getPageData, removeProducts } from '@/stores/foodOrder/productMng/productMng.service';
+import type { OwnerProductActionReq, OwnerProductFilterReq, OwnerProductResDTO } from '@/stores/foodOrder/productMng/productMng.type';
 
 // Components
 import CheckboxGrid from "@/components/common/grid/CheckboxGrid.vue";
@@ -138,6 +141,7 @@ const columnDefs = ref([
     cellRendererParams: { onCustomEvent: goAction },
   },
   { headerName: "Mục lục", field: "categoryName", cellStyle: { textAlign: "center" } },
+  { headerName: "Giá", field: "price", cellStyle: { textAlign: "center" } },
   { headerName: "Ngày tạo", field: "createdDate", cellStyle: { textAlign: "center" } },
   {
     headerName: "Trạng thái",

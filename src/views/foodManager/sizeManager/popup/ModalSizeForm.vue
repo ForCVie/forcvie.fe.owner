@@ -28,10 +28,10 @@
         <!-- Footer -->
         <template #footer>
             <button type="button" class="button btn_xl btn_white popup_close" @click="cancelAction()">
-                닫기
+                {{ t("common.list") }}
             </button>
             <button type="button" class="button btn_xl btn_blue" @click="onSave()">
-                확인
+                {{ t("common.confirm") }}
             </button>
         </template>
     </TModal>
@@ -81,14 +81,10 @@ const cancelAction = () => emit("cancelAction");
 
 const onSave = async () => {
 
-    if (store.check) {
-        alert(
-            t("common.messageValidateRequired"),
-            t("common.alertTitle"),
-            () => { }
-        );
-        return;
-    }
+  if (!formData.value.name) {
+    alert(t("common.messageValidateRequired"), t("common.alertTitle"), () => { });
+    return;
+  }
     confirm(
         t("common.message.confirmSave"),
         t("common.confirmTitle"),

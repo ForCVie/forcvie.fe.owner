@@ -63,10 +63,10 @@ const alert = useAlert();
 const confirm = useConfirm();
 
 // Props từ component cha
-const props = defineProps<{
-  isOpen: boolean,
-  dataSelect: string,
-}>();
+const props = defineProps({
+    isOpen: { type: Boolean, default: false },
+    dataSelect: { type: String, default: "" },
+});
 
 // Emit cho parent
 const emit = defineEmits(["closeModal", "confirmAction"]);
