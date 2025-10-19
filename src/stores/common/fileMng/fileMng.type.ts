@@ -19,3 +19,19 @@ export type fileUploadedInfo = {
     fimFilePath: string,
     deleteFlag: number,
 }
+
+export type FileMngDto = {
+    fimId: string;
+    fimSubFileId: number;
+    fimFileCategory: string;
+    fimFileName: string;
+    fimFilePath: string;
+    fimFileExt: string;
+    fimFileSize: number;
+    fimUseYn: string;
+    fimReferKeyId: string;
+    fimFileOrgName: string;
+    fimSectionName: string;
+    deleteFlag: string;
+    urlFile: string;
+}

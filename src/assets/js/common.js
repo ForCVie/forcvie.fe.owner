@@ -133,7 +133,7 @@ export function letterCount() {
           html: _text,
           confirmButtonColor: "#5D87FF",
           reverseButtons: true,
-          confirmButtonText: "확인",
+          confirmButtonText: "Đồng ý",
         });
         this.value = this.value.substring(0, countLimit);
         spanElement.textContent = countLimit;

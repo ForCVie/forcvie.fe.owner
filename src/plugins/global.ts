@@ -8,7 +8,7 @@ const alert = (_text: string, _title?: string, callback?: () => void) => {
     html: _text,
     confirmButtonColor: "#5D87FF",
     reverseButtons: true,
-    confirmButtonText: "확인",
+    confirmButtonText: "Đòng ý",
   }).then(() => {
     if (callback && typeof callback === "function") {
       callback();
@@ -25,8 +25,8 @@ const confirm = (_text: string, _title: string, callback: Function) => {
     showCancelButton: true,
     cancelButtonColor: "#fff",
     reverseButtons: true,
-    confirmButtonText: "확인",
-    cancelButtonText: "취소",
+    confirmButtonText: "Đồng ý",
+    cancelButtonText: "Quay lại",
   }).then((res) => {
     if (callback && typeof callback === "function" && res.isConfirmed) {
       callback(res.isConfirmed);

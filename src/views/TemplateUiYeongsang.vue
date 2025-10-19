@@ -7,6 +7,10 @@
       <div class="content_wrap">
         <div id="content" class="grid_content" tabindex="0">
           <Breadcrumb :pageTitle="pageTitle" :breadcrumbItems="breadcrumbItems"></Breadcrumb>
+            <h3 style="background-color: yellow;" class="section_tit_md">Video Player common</h3>
+          <div class="box" style="width: 500px;">
+            <VideoBase videoUrl="https://down-tx-sg.vod.susercontent.com/api/v4/11110105/mms/vn-11110105-6khwa-m85p9851hgnb5c.16004111755109671.mp4"  />
+          </div>
           <div class="box">
             <TableService />
           </div>
@@ -1942,7 +1946,7 @@
                   </div>
                   <div class="attach_filebox">
                     <p class="box_title_sm">IMG</p>
-                    <InputFileBase :id="'id3'" :name="'id3'" :type="'img'" :referKey="3" :mode="'create'"
+                    <InputFileBase :id="'id3'" :name="'id3'" :type="'img'" :referKey="3" :mode="'update'"
                         :multiple="true" :maxFile="1" ref="childRefUpLoad" :orgName="'orgName'"
                         :category="'category'" :sectionName="'sectionName'">
                     </InputFileBase>
@@ -2102,6 +2106,7 @@ import RadioButtonGrid from '@/components/common/grid/RadioButtonGrid.vue'
 import MenuItem from '@/components/common/menuItem/MenuItem.vue'
 import TableService from '@/components/common/tableService/TableService.vue'
 import AddressSelectV2 from '@/components/common/input/AddressSelectV2.vue'
+import VideoBase from '@/components/common/video/VideoBase.vue'
 
 export default defineComponent({
   data() {
@@ -2598,7 +2603,8 @@ export default defineComponent({
     Breadcrumb,
     LinkGridComponent,
     TModalQR,
-    TableService
+    TableService,
+    VideoBase
   },
   beforeMount() {
     let arr = []
@@ -2661,11 +2667,22 @@ export default defineComponent({
       // Thực hiện xử lý data xong call dowload
       this.exportExcelRef.downloadExcel();
     },
-    uploadFile() {
+    async uploadFile() {
       console.log('upLoaded')
       const chilRef = this.$refs.childRefUpLoad;
-      console.log('chilRef', chilRef)
-      chilRef.upLoadFile('CAT000000000000001');
+      console.log('chilRef', chilRef);
+
+      /* Upload file trước khi thêm data trong trường hợp cần lấy thông tin của file
+        - Bắt buộc category phải là prefix của bảng lưu thông tin
+        - Không bắt buộc truyền giá trị có thể để ""
+        ví dụ: lấy url của file để add vào bảng 
+        Khi lưu url chỉ cần lưu path không cần lưu domain cố định => khi sử dụng cần gọi file chỉ cần dùng common để gọi file getUriFile(path)
+        */
+      const dataFileReturn = await chilRef.upLoadFile('');
+      console.log(dataFileReturn);
+      /* Upload file sau khi thêm data trong trường hợp không cần lấy lại thông tin của file
+         */
+      // chilRef.upLoadFile('CAT000000000000001');
     },
     changeEditor() {
       // Get content
