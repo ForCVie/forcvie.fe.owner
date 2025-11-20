@@ -14,7 +14,7 @@
               <!-- Tự động gen -->
               <th scope="row" class="required">Tên thực đơn</th>
               <td class="td_input">
-                <InputBase id="nm" required />
+                <InputBase v-model:modelValue="dataDetail.name" id="name" required />
               </td>
             </tr>
           </tbody>
@@ -51,19 +51,26 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="ta_c">1</td>
-                <td>Món 1</td>
-                <td>Mục lục 1</td>
+              <tr v-if="selectedFoods.length === 0">
+                <td colspan="5" class="ta_c">Chưa chọn món ăn nào</td>
+              </tr>
+
+              <tr v-for="(food, index) in selectedFoods" :key="food.productSeq">
+                <td class="ta_c">{{ index + 1 }}</td>
+                <td>{{ food.name }}</td>
+                <td>{{ food.categoryName }}</td>
                 <td class="ta_c">
                   <button type="button" class="button btn_xs btn_white mg_r5">↑</button>
                   <button type="button" class="button btn_xs btn_white">↓</button>
                 </td>
                 <td class="ta_c">
-                  <button type="button" class="btn_icon icon_only delete">Xóa</button>
+                  <button type="button" class="btn_icon icon_only delete" @click="removeFood(index)">
+                    Xóa
+                  </button>
                 </td>
               </tr>
             </tbody>
+
           </table>
         </div>
       </div>
@@ -83,8 +90,8 @@
     </div>
 
     <!-- Start Popup Select Food -->
-    <ModalSelectFood :isOpen="modalOpen[0]" @closeModal="closeModal(0)" @confirmAction="closeModal(0)"
-      @cancelAction="closeModal(0)" />
+    <ModalSelectFood :isOpen="modalOpen[0]" @closeModal="closeModal(0)" @confirmAction="handleSelectFood"
+      :preSelectedFoods="listCheckBoxGrid" @cancelAction="closeModal(0)" />
     <!-- End Popup Select Food -->
   </section>
 </template>
@@ -92,18 +99,12 @@
 <script setup lang="ts">
 import { useAlert, useConfirm } from "@/components/common/composables/useAlert";
 import InputBase from "@/components/common/input/InputBase.vue";
-import ListCheckBoxBase from "@/components/common/input/ListCheckBoxBase.vue";
-import SelectBoxBaseSearch from "@/components/common/input/SelectBoxBaseSearch.vue";
-import {
-  STATE_N,
-  UP_CD_SITE,
-  UP_CD_USE_YN,
-} from "@/constants/common.const";
 import router from "@/router";
-import { employeeManagerRoute } from "@/router/routeItems/employeeManagerRoute";
+import { foodManagerRoute } from "@/router/routeItems/foodManagerRoute";
 import { commonStore } from "@/stores/common";
-import { getListCodeMng } from "@/stores/common/codeMng/codeMng.service";
-import { CodeMngModel } from "@/stores/common/codeMng/codeMng.type";
+import { findProductsInMenu, getDataDetail, saveData } from "@/stores/foodOrder/menuMng/menu.service";
+import { OwnerMenuReq } from "@/stores/foodOrder/menuMng/menu.type";
+import { OwnerProductResDTO } from "@/stores/foodOrder/productMng/productMng.type";
 import ModalSelectFood from "./popup/ModalSelectFood.vue";
 
 const { t } = useI18n();
@@ -111,20 +112,55 @@ const store = commonStore();
 const alert = useAlert();
 const confirm = useConfirm();
 
-const id = ref<string>();
+// Lấy ID từ state của router (dành cho chế độ chỉnh sửa)
+const id = ref<string | null>(history.state.id || null);
 
-const pageTitle = ref("Quản lý thực đơn");
+const pageTitle = ref(id.value ? "Chỉnh sửa thực đơn" : "Thêm mới thực đơn");
 const breadcrumbItems = ref([
-  { label: t("talentEduGoalsMng.breadcrumb.01"), link: "/" },
+  { label: "Quản lý thực đơn", link: foodManagerRoute.menuManager.path },
+  { label: pageTitle.value, link: "" }
 ]);
 
 const modalOpen = ref([false]);
 
+// Dữ liệu chi tiết cho menu (tên, mô tả, ...)
+const dataDetail = ref<OwnerMenuReq>({
+  name: "",
+  foodStoreSeq: "", 
+  useYn: "Y",
+  description: "",
+  productSeqs: []
+});
+
+// Danh sách các món ăn đã chọn để hiển thị trong bảng
+const selectedFoods = ref<OwnerProductResDTO[]>([]);
+// Danh sách ID của các món ăn đã chọn (để truyền cho modal)
+const listCheckBoxGrid = ref<string[]>([]);
+
+// Tải dữ liệu khi ở chế độ chỉnh sửa
 onBeforeMount(async () => {
+  if (id.value) {
+    store.setLoading(true);
+    try {
+      // Tải song song thông tin menu và danh sách sản phẩm
+      const [detailRes, productsRes] = await Promise.all([
+        getDataDetail(id.value),
+        findProductsInMenu(id.value)
+      ]);
+      dataDetail.value = detailRes.data.data;
+      selectedFoods.value = productsRes.data.data;
+      listCheckBoxGrid.value = selectedFoods.value.map(p => p.productSeq);
+    } catch (e) {
+      console.error("Lỗi khi tải dữ liệu chi tiết menu:", e);
+      alert(t("common.message.error"), t("common.alertTitle"), back);
+    } finally {
+      store.setLoading(false);
+    }
+  }
 });
 
 const back = () => {
-  router.push({ path: employeeManagerRoute.employeeManager.path });
+  router.push({ path: foodManagerRoute.menuManager.path });
 };
 
 const openModal = (index: number) => {
@@ -133,6 +169,19 @@ const openModal = (index: number) => {
 const closeModal = (index: number) => {
   modalOpen.value[index] = false
 }
+
+// Hàm được gọi khi xác nhận chọn món ăn từ Modal
+const handleSelectFood = (foods: OwnerProductResDTO[]) => {
+  selectedFoods.value = foods;
+  listCheckBoxGrid.value = selectedFoods.value.map(p => p.productSeq);
+  closeModal(0);
+};
+
+// Xóa một món ăn khỏi danh sách đã chọn
+const removeFood = (index: number) => {
+  selectedFoods.value.splice(index, 1);
+  listCheckBoxGrid.value = selectedFoods.value.map(p => p.productSeq);
+};
 
 const onSave = async () => {
   if (store.check) {
@@ -147,17 +196,27 @@ const onSave = async () => {
     t("common.message.confirmSave"),
     t("common.confirmTitle"),
     async () => {
+      store.setLoading(true);
+      try {
+        // Tạo một payload duy nhất bao gồm cả thông tin menu và danh sách ID sản phẩm
+        const payload: OwnerMenuReq = {
+          ...dataDetail.value,
+          productSeqs: selectedFoods.value.map(food => food.productSeq)
+        };
 
-    }
-  );
-};
+        // Gọi một API saveData duy nhất
+        await saveData(payload);
 
-const onRemove = async () => {
-  confirm(
-    t("common.message.confirmDelete"),
-    t("common.confirmTitle"),
-    async () => {
+        alert(t("common.message.saveSuccess"), t("common.alertTitle"), () => {
+          back();
+        });
 
+      } catch (e) {
+        console.error("Lỗi khi lưu menu:", e);
+        alert(t("common.message.error"), t("common.alertTitle"));
+      } finally {
+        store.setLoading(false);
+      }
     }
   );
 };

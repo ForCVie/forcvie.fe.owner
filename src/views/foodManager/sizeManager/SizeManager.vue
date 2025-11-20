@@ -1,171 +1,185 @@
 <template>
-    <section id="content" class="content_wrapper grid_content" tabindex="0">
-        <Breadcrumb :pageTitle="pageTitle" :breadcrumbItems="breadcrumbItems"></Breadcrumb>
-        <div class="box dp_block">
-            <div class="box_inner">
-                <GridComponentV2 :rowData="data" :columnDefs="columnDefs" :paginationClientFlag="false"
-                    :paginationPageSize="paginationPageSize" @customPagination="fnPagination" :totalRecord="totalRecord"
-                    :paginationPageSizeSelector="paginationPageSizeSelector">
-                    <template #button>
-                        <div>
-                            <ButtonBase type="button" class="btn_round btn_xs btn_primary mg_l10" @click="openModal(0)">
-                                {{ t("common.add") }}
-                            </ButtonBase>
-                        </div>
-                    </template>
-                </GridComponentV2>
-            </div>
-        </div>
+  <section id="content" class="content_wrapper grid_content" tabindex="0">
+    <Breadcrumb :pageTitle="pageTitle" :breadcrumbItems="breadcrumbItems"></Breadcrumb>
 
-        <!-- Start Popup Select Food -->
-        <ModalSizeForm :isOpen="modalOpen[0]" :dataSelect="dataSelect" @closeModal="closeModal(0)" @confirmAction="closeModal(0)"
-            @cancelAction="closeModal(0)" />
-        <!-- End Popup Select Food -->
-    </section>
+    <div class="box dp_block">
+      <div class="box_section">
+        <div class="search_box col_1">
+          <ul>
+            <li>
+              <p>Tên Kích Cỡ</p>
+              <InputBase v-model:modelValue="dataSearch.name" id="sizeNameSearch" @keyup.enter="searchFormData" />
+            </li>
+          </ul>
+        </div>
+        <div class="btn_group btn_end">
+          <button class="button btn_xs btn_lightgray btn_responsive" @click="clearFormSearch()">
+            {{ t("common.reset") }}
+          </button>
+          <button class="button btn_xs btn_blue btn_responsive" @click="searchFormData()">
+            {{ t("common.search") }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="box dp_block">
+      <div class="box_inner">
+        <GridComponentV2 :rowData="data" :columnDefs="columnDefs" :paginationClientFlag="false"
+          :paginationPageSize="paginationPageSize" @customPagination="fnPagination" :totalRecord="totalRecord"
+          :paginationPageSizeSelector="paginationPageSizeSelector">
+          <template #button>
+            <div>
+              <ButtonBase type="button" class="btn_round btn_xs btn_primary mg_l10" @click="openModalForCreate">
+                {{ t("common.add") }}
+              </ButtonBase>
+            </div>
+          </template>
+        </GridComponentV2>
+      </div>
+    </div>
+
+    <!-- Popup Thêm/Sửa Kích Cỡ -->
+    <ModalSizeForm v-if="isModalOpen" :isOpen="isModalOpen" :dataSelect="dataSelect" @closeModal="closeModal"
+      @confirmAction="handleConfirmAction" />
+  </section>
 </template>
 
 <script setup lang="ts">
-import BtnGridComponent from "@/components/common/grid/BtnGridComponent.vue";
-import CheckboxGrid from "@/components/common/grid/CheckboxGrid.vue";
-import ImgGridComponent from "@/components/common/grid/ImgGridComponent.vue";
+import { ref, onBeforeMount } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { commonStore } from '@/stores/common';
+import { PAGINATION_PAGE_SIZE, PAGINATION_PAGE_SIZE_SELECTOR } from "@/constants/screen.const";
+import { getPageData, removeData } from '@/stores/foodOrder/sizeMng/sizeMng.service';
+import type { OwnerProductSizeFilterReq, OwnerProductSizeResDTO } from '@/stores/foodOrder/sizeMng/sizeMng.type';
+
 import LinkGridComponent from "@/components/common/grid/LinkGridComponent.vue";
-import InputBase from "@/components/common/input/InputBase.vue";
-import { UP_CD_USE_YN } from "@/constants/common.const";
-import {
-    MODE_CREATE,
-    PAGINATION_PAGE_SIZE,
-    PAGINATION_PAGE_SIZE_SELECTOR,
-} from "@/constants/screen.const";
-import router from "@/router";
-import { employeeManagerRoute } from "@/router/routeItems/employeeManagerRoute";
-import { foodManagerRoute } from "@/router/routeItems/foodManagerRoute";
-import { commonStore } from "@/stores/common";
-import { getListCodeMng } from "@/stores/common/codeMng/codeMng.service";
-import { CodeMngModel } from "@/stores/common/codeMng/codeMng.type";
-// import { getPageData } from "@/stores/promotionMng/bannerMng/bannerMng.service";
-import {
-    AdBannerFilterReq,
-    AdBannerResDTO,
-} from "@/stores/promotionMng/bannerMng/bannerMng.type";
-import ModalSizeForm from "./popup/ModalSizeForm.vue";
 import ButtonGridComponent from "@/components/common/grid/ButtonGridComponent.vue";
+import ModalSizeForm from "./popup/ModalSizeForm.vue";
+import { useAlert, useConfirm } from '@/components/common/composables/useAlert';
+import { log } from 'console';
 
 const { t } = useI18n();
 const store = commonStore();
+const alert = useAlert();
+const confirm = useConfirm();
 
-const pageTitle = ref("Quản lý size");
+const pageTitle = ref("Quản Lý Kích Cỡ");
 const breadcrumbItems = ref([
-    { label: t("talentEduGoalsMng.breadcrumb.01"), link: "/" },
+  { label: "Trang chủ", link: "/" },
+  { label: "Quản lý kích cỡ", link: "" }
 ]);
+
 const paginationPageSize = ref(PAGINATION_PAGE_SIZE);
 const paginationPageSizeSelector = ref(PAGINATION_PAGE_SIZE_SELECTOR);
 const totalRecord = ref(0);
-const selectAll = ref(false);
-const modalOpen = ref([false]);
+const isModalOpen = ref(false);
+const dataSelect = ref<string>();
 
 const columnDefs = ref([
-    {
-        headerName: "#",
-        field: "rowNum",
-        flex: 0.2
+  { headerName: "#", field: "rowNum", flex: 0.2, cellStyle: { textAlign: 'center' } },
+  {
+    headerName: "Tên Kích Cỡ",
+    field: "name",
+    cellRenderer: LinkGridComponent,
+    cellRendererParams: { onCustomEvent: (data: OwnerProductSizeResDTO) => openModalForEdit(data) },
+  },
+  { headerName: "Ngày tạo", field: "createdDate", flex: 0.5, cellStyle: { textAlign: "center" } },
+  {
+    headerName: "Chức năng",
+    field: "sizeSeq",
+    cellStyle: { textAlign: "center" },
+    cellRenderer: ButtonGridComponent,
+    cellRendererParams: {
+      onCustomEvent: (data: OwnerProductSizeResDTO) => onRemove(data),
+      className: "btn_round btn_xs btn_red",
+      value: "Xóa"
     },
-    {
-        headerName: "Tiêu đề",
-        field: "bannerNm",
-        cellRenderer: LinkGridComponent,
-        cellRendererParams: { onCustomEvent: goAction },
-    },
-    {
-        headerName: "Ngày tạo",
-        field: "url",
-        cellStyle: {
-            textAlign: "center",
-        },
-    },
-    {
-        headerName: "Chức năng",
-        field: "useYn",
-        cellStyle: { textAlign: "center" },
-        cellRenderer: ButtonGridComponent,
-        cellRendererParams: {
-            onCustomEvent: () => openModal(0), // truyền callback
-            className: "btn_round btn_xs btn_primary", // truyền trực tiếp className
-            value: "Xóa"
-        },
-        flex: 0.3
-    }
+    flex: 0.3
+  }
 ]);
 
-const dataSearch = ref<AdBannerFilterReq>({
-    bannerNm: "",
-    typeCd: "",
-    url: "",
-    useYn: "",
-    page: 1,
-    size: PAGINATION_PAGE_SIZE,
-    sort: "",
+const dataSearch = ref<OwnerProductSizeFilterReq>({
+  name: "",
+  foodStoreSeq: "",
+  page: 1,
+  size: PAGINATION_PAGE_SIZE,
+  sort: "",
 });
 
-const data = ref([]);
-const dataSelect = ref();
+const data = ref<OwnerProductSizeResDTO[]>([]);
 
-onBeforeMount(async () => {
-    // store.setLoading(true);
-    // await getListCodeMng({ upCdIdList: [UP_CD_USE_YN] }).then(
-    //   (res) => {
-    //     listUseYn.value = res.data.data.filter(
-    //       (item: CodeMngModel) => item.upCdId == UP_CD_USE_YN
-    //     );
-    //     listUseYn.value?.unshift({
-    //         cdId: "",
-    //         cdNm: t("common.all"),
-    //         upCdId: UP_CD_USE_YN,
-    //       });
-    //   });
-    // store.setLoading(false);
+onBeforeMount(() => {
+  // searchFormData();
 });
-function goAction(data: AdBannerResDTO) {
-    console.log(data);
-    dataSelect.value = data;
-    openModal(0);
-}
 
 const fnPagination = async (pageNumber: number, pagesSize: number) => {
-    dataSearch.value.page = pageNumber;
-    dataSearch.value.size = pagesSize;
-    data.value = [
-        {
-            img: "https://images.squarespace-cdn.com/content/v1/53883795e4b016c956b8d243/1597822154096-LK0WD8P39LYLJAG0PXJ6/chup-anh-thuc-an-1.jpg",
-            rowNum: 1,
-            bannerNm: "Test Banner",
-            url: "http://example.com",
-            useYn: "Y",
-        },
-    ];
-    //   await getPageData(dataSearch.value).then((res) => {
-    //     totalRecord.value = res.data.data.totalRecord;
-    //     data.value = res.data.data.data.map(
-    //       (item: AdBannerResDTO, index: number) => {
-    //         item.rowNum =
-    //           (dataSearch.value.page - 1) * dataSearch.value.size + index + 1;
-    //         return item;
-    //       }
-    //     );
-    //   });
+  dataSearch.value.page = pageNumber;
+  dataSearch.value.size = pagesSize;
+  await getPageData(dataSearch.value).then((res) => {
+    totalRecord.value = res.data.data.totalRecord;
+    data.value = res.data.data.data.map((item: OwnerProductSizeResDTO, index: number) => {
+      item.rowNum =
+        (dataSearch.value.page - 1) * dataSearch.value.size + index + 1,
+        item.createdDate = item.createdDate ? new Date(item.createdDate).toLocaleDateString('vi-VN') : '';
+      return item;
+    });
+  });
 };
 
-function openModal(index: number) {
-    modalOpen.value[index] = true
-}
-const closeModal = (index: number) => {
-    dataSelect.value = {};
-    modalOpen.value[index] = false
-}
+const searchFormData = () => {
+  dataSearch.value.page = 1;
+  fnPagination(dataSearch.value.page, dataSearch.value.size);
+};
+
+const clearFormSearch = () => {
+  dataSearch.value.name = "";
+  searchFormData();
+};
+
+const openModalForCreate = () => {
+  dataSelect.value = "";
+  isModalOpen.value = true;
+};
+
+const openModalForEdit = (item: OwnerProductSizeResDTO) => {
+  dataSelect.value = item.sizeSeq;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
+
+const handleConfirmAction = () => {
+  closeModal();
+  searchFormData(); // Load lại dữ liệu sau khi thêm/sửa thành công
+};
+
+const onRemove = async (item: OwnerProductSizeResDTO) => {
+  confirm(
+    t("common.message.confirmDelete"),
+    t("common.confirmTitle"),
+    async () => {
+      if (item.sizeSeq) {
+        await removeData(item.sizeSeq).then((res) => {
+          alert(
+            t("common.message.deleteSuccess"),
+            t("common.alertTitle"),
+            () => {
+              searchFormData();
+            }
+          );
+        });
+      }
+    }
+  );
+};
 </script>
+
 <style>
-.ag-cell-value.ag-cell.ag-cell-not-inline-editing.ag-cell-normal-height {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.ag-cell {
+  display: flex;
+  align-items: center;
 }
 </style>
