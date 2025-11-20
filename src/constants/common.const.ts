@@ -8,6 +8,7 @@ export const LANGUAGE_CHINA_CODE = "CH";
 export const LANGUAGE_ENGLISH_CODE = "EN";
 export const SITE_ADMIN = "a";
 export const SITE_OWNER = "owner";
+export const SITE_STAFF = "owner";
 export const STAFF_CODE = "STAFF"
 export const STUDENT_CODE = "STUDENT"
 export const SITE_EMPLOYEE = "e";

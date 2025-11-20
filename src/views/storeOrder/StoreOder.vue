@@ -1,6 +1,9 @@
 <template>
   <section id="content" class="content_wrapper grid_content" tabindex="0">
-    <Breadcrumb :pageTitle="pageTitle"></Breadcrumb>
+  <div class="page_toparea dp_flex al_center jc_between">
+    <h2 class="page_title">{{ pageTitle }}</h2>
+    <ToggleSwitch v-model="openSwtich" size="medium" @click="changeOpenStore()" />
+  </div>
     <div v-show="!modalOpen[5]">
       <CollapseBase :isShow="openCollapse" :title="'Tìm kiếm nhanh'" :isCheck="true" :onClick="() => {
           openCollapse = !openCollapse;
@@ -46,15 +49,14 @@
           </ul>
         </span>
       </div> -->
-      <div v-for="(floor, index) in floors" :key="index" class="box dp_block floor">
+      <div v-for="(floor, index) in dataDetail?.floors" :key="index" class="box dp_block floor">
         <div class="box_inner">
-          <h3 class="box_title">{{ floor.name }}</h3>
+          <h3 class="box_title">{{ floor.floorName }}</h3>
         </div>
         <div class="grid">
-          <div v-for="(table, index) in floor.tables" :key="table.id" class="table"
-            :class="table.status + (index % 2 == 0 ? ' blink-shadow' : '')" @click="openModal(0)">
-            <div class="table-number">{{ table.name }}</div>
-            <div class="table-desc">{{ table.desc }}</div>
+          <div v-for="(table, index) in floor.storeTables" :key="table.tableSeq" class="table"
+            :class="table.status ? table.status : 'occupied'" @click="selectDataTable(table)">
+            <div class="table-number">{{ table.tableName }}</div>
           </div>
         </div>
       </div>
@@ -67,6 +69,36 @@
   <PopupSeatDetailOrder :modalOpen="modalOpen[2]" :closeModal="closeModal" />
   <PopupSeatDetailRemoveOrder :modalOpen="modalOpen[3]" :closeModal="closeModal" />
   <PopupSeatOrder :modalOpen="modalOpen[4]" :closeModal="closeModal" />
+  <PopupSelectMenu :modalOpen="modalOpen[6]" :closeModal="closeModal" />
+  <TModal
+    :is-open="modalOpen[7]"
+    :is-show-header="true"
+    :is-show-footer="true"
+    @close-modal="closeModal(7)"
+  >
+    <template #title>
+      <strong class="bold">Phương thức đặt bàn</strong>
+    </template>
+    <template #default>
+      <div class="dp_flex jc_around al_center">
+        <button class="button btn_md btn_primary" @click="selectOpenStart('QR')">
+          Đặt qua QRCode
+        </button>
+        <button class="button btn_md btn_primary" @click="selectOpenStart('TT')">
+          Đặt món trực tiếp
+        </button>
+      </div>
+    </template>
+    <template #footer>
+      <button
+        type="button"
+        class="button btn_xl btn_white popup_close"
+        @click="closeModal(7)"
+      >
+        Đóng
+      </button>
+    </template>
+  </TModal>
 </template>
 
 <script setup lang="ts">
@@ -79,24 +111,26 @@ import PopupSeatDetailOrder from "./popup/PopupSeatDetailOrder.vue";
 import PopupSeatDetailRemoveOrder from "./popup/PopupSeatDetailRemoveOrder.vue";
 import PopupSeatOrder from "./popup/PopupSeatOrder.vue";
 import StoreOrderFood from "./main/StoreOrderFood.vue";
+import ToggleSwitch from "@/components/common/toggleSwitch/ToggleSwitch.vue";
+import PopupSelectMenu from "./popup/PopupSelectMenu.vue";
+import { changeActiveStore, getDetailStoreOrder } from "@/stores/storeOrder/storeOrder.service";
+import { commonStore } from "@/stores/common";
+import { useAlert, useToast } from "@/components/common/composables/useAlert";
+import { StoreOrderDetailResponse, StoreTableResDTO } from "@/stores/storeOrder/storeOrder.type";
 
 const pageTitle = ref("Quản lý đặt bàn");
 
-const floors = ref([
-  {
-    name: "Tầng 1",
-    tables: createTables(1, 50),
-  },
-  {
-    name: "Tầng 2",
-    tables: createTables(101, 50),
-  },
-]);
-const modalOpen = ref([false, false, false, false, false, false]);
+const { t } = useI18n();
+const store = commonStore();
+const alert = useAlert();
+const toast = useToast();
+
+const modalOpen = ref([false, false, false, false, false, false, false]);
 const searchModel = ref({
   statusOrder: "",
 });
 const openCollapse = ref(false);
+const openSwtich = ref(false);
 const listStatus = ref<CodeMngModel[]>([
   {
     cdId: "",
@@ -104,33 +138,59 @@ const listStatus = ref<CodeMngModel[]>([
     upCdId: "",
   },
   {
-    cdId: "1",
+    cdId: "10520",
     cdNm: "Có khách",
     upCdId: "",
   },
   {
-    cdId: "2",
-    cdNm: "Còn Trống",
+    cdId: "10510",
+    cdNm: "Bàn Trống",
     upCdId: "",
   },
   {
-    cdId: "4",
+    cdId: "10530",
     cdNm: "Đặt trước",
     upCdId: "",
   },
 ]);
 
-function createTables(startId: number, count: number) {
-  const tables = [];
-  for (let i = 0; i < count; i++) {
-    tables.push({
-      id: startId + i,
-      name: `Bàn ${i + 1}`,
-      desc: `Mô tả ${i + 1}`,
-      status: i % 3 === 0 ? "occupied" : i % 3 === 1 ? "reserved" : "available",
-    });
+const dataDetail = ref<StoreOrderDetailResponse>();
+const tableSelect = ref<StoreTableResDTO>();
+
+onBeforeMount(async () => {
+  store.setLoading(true);
+  await getDetailStoreOrder().then((res) => {
+    dataDetail.value = res.data.data;
+    console.log(dataDetail.value);
+    
+    if (dataDetail.value?.isActive === 'N') {
+      openSwtich.value = false
+      alert("Trạng thái hoạt động đang tắt. Hãy bật trạng thái hoạt động để đóng khách");
+    } else {
+      openSwtich.value = true
+    }
+  }).finally(() => {
+    store.setLoading(false);
+  })
+})
+
+const changeOpenStore = () => {
+  store.setLoading(true);
+  let isActive = "";
+  if (!openSwtich.value) {
+    isActive = "Y";
+  } else {
+    isActive = "N";
   }
-  return tables;
+  changeActiveStore(isActive).then((res) => {
+    if (isActive === "Y") {
+      toast("Bật trạng thái mở cửa thành công");
+    } else {
+      toast("Tắt trạng thái mở cửa thành công");
+    }
+  }).finally(() => {
+    store.setLoading(false);
+  })
 }
 
 const openModal = (index: number) => {
@@ -139,6 +199,22 @@ const openModal = (index: number) => {
 const closeModal = (index: number) => {
   modalOpen.value[index] = false;
 };
+const selectDataTable = (tableSel:StoreTableResDTO) => {
+  tableSelect.value = tableSel;
+  console.log(tableSelect.value);
+  
+  if (tableSelect.value.status == null || tableSelect.value.status === '10510') {
+    openModal(7);
+  }
+} 
+const selectOpenStart = (type:string) => {
+  if (type === "QR") {
+    openModal(1);
+  } else {
+    openModal(4);
+  }
+  closeModal(7);
+}
 </script>
 <style scoped>
 .grid {

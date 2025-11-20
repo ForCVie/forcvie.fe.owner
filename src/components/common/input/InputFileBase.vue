@@ -328,7 +328,7 @@ export default {
       }
     },
     async upLoadFile(referKeyId) {
-      if (!referKeyId || this.fileArray.length == 0) {
+      if ((!referKeyId && !this.category) || this.fileArray.length == 0) {
         return;
       }
       const formData = new FormData();
@@ -342,6 +342,7 @@ export default {
       });
       await this.store.addfile(formData);
       if (this.store.status == SUCCSESS_STATUS) {
+        return this.store.dataFileUpload;
       }
     },
     handleFileChange(event) {

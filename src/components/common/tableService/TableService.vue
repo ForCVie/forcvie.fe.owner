@@ -1,45 +1,85 @@
 <template>
   <div class="grid-container">
     <div
-      v-for="index in totalSeats"
+      v-for="(table, index) in modelValue"
       :key="index"
       class="grid-item cursor"
-      @click="openModal(0)"
+      @click="openModal(0, index)"
     >
       <div class="cell-content">
-        <div class="circle" v-if="index == totalSeats">+</div>
-        <div v-if="index != totalSeats" class="table-name">Bàn {{ index }}</div>
-        <div v-if="index != totalSeats" class="table-desc">Mô tả {{ index }}</div>
+        <div class="table-name">{{ table.tableName }}</div>
+        <!-- <div class="table-desc">{{ table.description }}</div> -->
+      </div>
+    </div>
+    <div
+      class="grid-item cursor"
+      @click="openModal(0, modelValue.length + 1)"
+    >
+      <div class="cell-content">
+        <div class="circle">+</div>
       </div>
     </div>
   </div>
-  <!-- Start Popup Select Food -->
-  <ModalSeatManager :isOpen="modalOpen[0]" :dataSelect="dataSelect" @closeModal="closeModal(0)" @confirmAction="closeModal(0)"
-      @cancelAction="closeModal(0)" />
-  <!-- End Popup Select Food -->
+
+  <!-- Popup -->
+  <ModalSeatManager
+  v-if="modalOpen[0]"
+    :isOpen="modalOpen[0]"
+    :dataSelect="dataSelect"
+    @closeModal="closeModal(0)"
+    @confirmAction="addTable"
+    @cancelAction="closeModal(0)"
+  />
 </template>
 
 <script setup lang="ts">
-import ModalSeatManager from '@/views/seatManager/seatManager/popup/ModalSeatManager.vue';
+import { ref } from "vue";
+import ModalSeatManager from "@/views/seatManager/seatManager/popup/ModalSeatManager.vue";
+import { StoreTableResDTO } from "@/stores/seatManager/seatManager/seatManager.type";
 
-const totalSeats = 12;
+const props = defineProps<{
+  modelValue: StoreTableResDTO[];
+}>();
 
-const dataSelect = ref();
+// ✅ Cho phép emit để cập nhật lại giá trị
+const emit = defineEmits(["update:modelValue"]);
 
 const modalOpen = ref([false]);
+const dataSelect = ref();
+const indexSelect = ref(-1);
 
-const openModal = (index: number) => {
-  modalOpen.value[index] = true
-}
+const openModal = (index: number, dataIndex:number) => {
+  indexSelect.value = dataIndex;
+  modalOpen.value[index] = true;
+  dataSelect.value = props.modelValue[dataIndex];
+};
+
 const closeModal = (index: number) => {
-  modalOpen.value[index] = false
-}
+  modalOpen.value[index] = false;
+};
+
+// ✅ Ví dụ: thêm bàn mới khi nhấn dấu "+"
+const addTable = (data: StoreTableResDTO) => {
+  // Nếu chưa chọn vị trí, thêm vào cuối
+  if (indexSelect.value == null || indexSelect.value >= props.modelValue.length) {
+    props.modelValue.push(data);
+  } else {
+    // Chèn vào vị trí được chọn (không xóa phần tử nào)
+    props.modelValue.splice(indexSelect.value, 1, data);
+  }
+
+  // Cập nhật lại v-model
+  emit("update:modelValue", [...props.modelValue]);
+
+  console.log(props.modelValue);
+  closeModal(0);
+};
 </script>
 
 <style scoped>
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 4 cột, có thể đổi nếu muốn */
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   width: 100%;
 }
