@@ -21,18 +21,10 @@
               <th scope="row" class="required">Mục lục</th>
               <td>
                 <div class="dp_flex al_center">
-                  <SelectBoxBaseSearch
-                    id="categorySeq"
-                    name="categorySeq"
-                    v-model="dataDetail.categorySeq"
-                    :data="listCategory"
-                    :value-select-all="t('common.select')"
-                  />
+                  <SelectBoxBaseSearch id="categorySeq" name="categorySeq" v-model="dataDetail.categorySeq"
+                    :data="listCategory" :value-select-all="t('common.select')" />
                   <div>
-                    <ButtonBase
-                      class="button btn_xs btn_blue wd_100 ml-2"
-                      @click="openModal(0)"
-                    >
+                    <ButtonBase class="button btn_xs btn_blue wd_100 ml-2" @click="openModal(1)">
                       Thêm mục lục
                     </ButtonBase>
                   </div>
@@ -44,18 +36,10 @@
               <th scope="row" class="required">Size</th>
               <td>
                 <div class="dp_flex al_center">
-                  <SelectBoxBaseSearch
-                    id="sizeSeq"
-                    name="sizeSeq"
-                    v-model="dataDetail.sizeSeq"
-                    :data="listSize"
-                    :value-select-all="t('common.select')"
-                  />
+                  <SelectBoxBaseSearch id="sizeSeq" name="sizeSeq" v-model="dataDetail.sizeSeq" :data="listSize"
+                    :value-select-all="t('common.select')" />
                   <div>
-                    <ButtonBase
-                      class="button btn_xs btn_blue wd_100 ml-2"
-                      @click="openModal(1)"
-                    >
+                    <ButtonBase class="button btn_xs btn_blue wd_100 ml-2" @click="openModal(0)">
                       Thêm size
                     </ButtonBase>
                   </div>
@@ -66,21 +50,15 @@
             <tr>
               <th scope="row" class="required">Ảnh món ăn</th>
               <td>
-                <!-- <InputFileBase v-model="dataDetail.imageUrl" /> chưa làm--> 
+                <!-- <InputFileBase v-model="dataDetail.imageUrl" /> chưa làm-->
               </td>
             </tr>
 
             <tr>
               <th scope="row" class="required">Giá</th>
               <td class="td_input">
-                <InputBase
-                  v-model:modelValue="dataDetail.price"
-                  id="price"
-                  required
-                  :is-number="true"
-                  :min-value="0"
-                  :decimal-places="0"
-                />
+                <InputBase v-model:modelValue="dataDetail.price" id="price" required :is-number="true" :min-value="0"
+                  :decimal-places="0" />
               </td>
             </tr>
 
@@ -105,10 +83,9 @@
         </ButtonBase>
       </div>
     </div>
-    
+
     <!-- Popup Thêm/Sửa Kích Cỡ -->
-    <ModalSizeForm v-if="modalOpen[0]" :isOpen="modalOpen[0]" @closeModal="closeModal(0)"
-      @confirmAction="saveSize" />
+    <ModalSizeForm v-if="modalOpen[0]" :isOpen="modalOpen[0]" @closeModal="closeModal(0)" @confirmAction="saveSize" />
     <!-- Popup Thêm/Sửa Danh Mục -->
     <ModalProductCategoryForm v-if="modalOpen[1]" :isOpen="modalOpen[1]" @closeModal="closeModal(1)"
       @confirmAction="saveCategory" />
@@ -207,15 +184,15 @@ const onSave = async () => {
     alert(
       t("common.messageValidateRequired"),
       t("common.alertTitle"),
-      () => {}
+      () => { }
     );
     return;
   }
 
   confirm(t("common.message.confirmSave"), t("common.confirmTitle"), async () => {
-      const dataSave = {
-        ...dataDetail.value,
-      } as OwnerProductReq;
+    const dataSave = {
+      ...dataDetail.value,
+    } as OwnerProductReq;
     await saveData(dataSave);
     alert(t("common.message.saveSuccess"), t("common.alertTitle"), () => {
       back();

@@ -1,7 +1,7 @@
 import type { OwnerProductResDTO } from "../productMng/productMng.type";
 
 export type OwnerMenuResDTO = {
-  menuSeq: string;
+  foodMenuSeq: string;
   name: string;
   description: string;
   useYn: string; // 'Y' hoặc 'N'
@@ -23,26 +23,27 @@ export type OwnerMenuFilterReq = {
 
 // DTO cho request tạo/cập nhật Menu
 export type OwnerMenuReq = {
-  menuSeq?: string;
+  foodMenuSeq?: string;
   foodStoreSeq: string;
   name: string;
+  code: string;
   description: string;
   useYn: string;
-  productSeqs: string[];
+  foodSeqs: string[];
 };
 
 // DTO cho chi tiết Menu
 export type OwnerMenuDetailDTO = OwnerMenuReq & {
-  products: OwnerProductResDTO[]; // Danh sách sản phẩm trong menu
+  foodSeqs: OwnerProductResDTO[]; // Danh sách sản phẩm trong menu
 };
 
 // DTO cho các hành động hàng loạt
 export type OwnerMenuActionReq = {
-  menuSeqs: string[];
+  foodMenuSeqs: string[];
 };
 
 // DTO để cập nhật sản phẩm trong menu
 export type UpdateMenuProductsRequest = {
-  menuSeq: string;
-  productSeqs: string[];
+  foodMenuSeq: string;
+  foodSeqs: string[];
 };
