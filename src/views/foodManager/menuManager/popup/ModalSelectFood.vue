@@ -136,23 +136,25 @@ const columnDefs = ref([
 ]);
 
 // Lifecycle
-onMounted(async () => {
-  store.setLoading(true);
-  listCategoryForSearch.value = [...props.preSelectedFoods];
-  try {
-    const codeRes = await getListCodeMng({ upCdIdList: [UP_CD_USE_YN] });
-    listUseYn.value = codeRes.data.data.filter((item: any) => item.upCdId == UP_CD_USE_YN);
-    listUseYn.value.unshift({ cdId: '', cdNm: t('common.all') });
+onUpdated(async () => {
+  if (props.isOpen) {
+    store.setLoading(true);
+    listCheckBoxGrid.value = [...props.preSelectedFoods];
+    try {
+      const codeRes = await getListCodeMng({ upCdIdList: [UP_CD_USE_YN] });
+      listUseYn.value = codeRes.data.data.filter((item: any) => item.upCdId == UP_CD_USE_YN);
+      listUseYn.value.unshift({ cdId: '', cdNm: t('common.all') });
 
-    const cateRes = await getAllCategories(dataSearchCategory.value);
-    listCategoryForSearch.value = cateRes.data.data.map((c: any) => ({
-      cdId: c.categorySeq,
-      cdNm: c.name,
-    }));
-  } catch (e) {
-    console.error(e);
-  } finally {
-    store.setLoading(false);
+      const cateRes = await getAllCategories(dataSearchCategory.value);
+      listCategoryForSearch.value = cateRes.data.data.map((c: any) => ({
+        cdId: c.categorySeq,
+        cdNm: c.name,
+      }));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      store.setLoading(false);
+    }
   }
 });
 
@@ -173,14 +175,14 @@ const fnPagination = async (pageNumber: number, pageSize: number) => {
         ? new Date(item.createdDate).toLocaleDateString('vi-VN')
         : '',
       // Đánh dấu checkbox dựa trên preSelectedFoods
-      checkedFlag: listCheckBoxGrid.value.includes(item.productSeq),
+      checkedFlag: listCheckBoxGrid.value.includes(item.foodSeq),
     }));
 
     const resetSelect = document.getElementById('selectAllGridId01');
     if (resetSelect) {
       (resetSelect as HTMLInputElement).indeterminate = false;
       (resetSelect as HTMLInputElement).checked = data.value.length > 0 &&
-        data.value.every((item) => listCheckBoxGrid.value.includes(item.productSeq));
+        data.value.every((item) => listCheckBoxGrid.value.includes(item.foodSeq));
     }
   } catch (e) {
     console.error(e);
@@ -206,17 +208,17 @@ function searchFormData() {
 function checkChild(value: boolean, rowData: any) {
   rowData.checkedFlag = value;
   if (value) {
-    if (!listCheckBoxGrid.value.includes(rowData.productSeq)) {
-      listCheckBoxGrid.value.push(rowData.productSeq);
+    if (!listCheckBoxGrid.value.includes(rowData.foodSeq)) {
+      listCheckBoxGrid.value.push(rowData.foodSeq);
     }
   } else {
-    const index = listCheckBoxGrid.value.indexOf(rowData.productSeq);
+    const index = listCheckBoxGrid.value.indexOf(rowData.foodSeq);
     if (index !== -1) listCheckBoxGrid.value.splice(index, 1);
   }
 
   // Cập nhật selectAll
   selectAll.value = data.value.length > 0 &&
-    data.value.every((item) => listCheckBoxGrid.value.includes(item.productSeq));
+    data.value.every((item) => listCheckBoxGrid.value.includes(item.foodSeq));
 }
 
 function checkAll(value: boolean) {
@@ -224,11 +226,11 @@ function checkAll(value: boolean) {
   data.value.forEach((item) => {
     item.checkedFlag = value;
     if (value) {
-      if (!listCheckBoxGrid.value.includes(item.productSeq)) {
-        listCheckBoxGrid.value.push(item.productSeq);
+      if (!listCheckBoxGrid.value.includes(item.foodSeq)) {
+        listCheckBoxGrid.value.push(item.foodSeq);
       }
     } else {
-      const index = listCheckBoxGrid.value.indexOf(item.productSeq);
+      const index = listCheckBoxGrid.value.indexOf(item.foodSeq);
       if (index !== -1) listCheckBoxGrid.value.splice(index, 1);
     }
   });
@@ -240,7 +242,7 @@ const closeModal = () => {
 
 const confirmAction = () => {
   const selectedProducts = data.value.filter(item =>
-    listCheckBoxGrid.value.includes(item.productSeq)
+    listCheckBoxGrid.value.includes(item.foodSeq)
   );
   emit('confirmAction', selectedProducts);
 };

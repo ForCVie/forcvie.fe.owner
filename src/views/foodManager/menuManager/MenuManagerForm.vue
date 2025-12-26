@@ -12,6 +12,13 @@
           <tbody>
             <tr>
               <!-- Tự động gen -->
+              <th scope="row" class="required">Mã thực đơn</th>
+              <td class="td_input">
+                <InputBase v-model:modelValue="dataDetail.code" id="code" required />
+              </td>
+            </tr>
+            <tr>
+              <!-- Tự động gen -->
               <th scope="row" class="required">Tên thực đơn</th>
               <td class="td_input">
                 <InputBase v-model:modelValue="dataDetail.name" id="name" required />
@@ -55,7 +62,7 @@
                 <td colspan="5" class="ta_c">Chưa chọn món ăn nào</td>
               </tr>
 
-              <tr v-for="(food, index) in selectedFoods" :key="food.productSeq">
+              <tr v-for="(food, index) in selectedFoods" :key="food.foodSeq">
                 <td class="ta_c">{{ index + 1 }}</td>
                 <td>{{ food.name }}</td>
                 <td>{{ food.categoryName }}</td>
@@ -126,10 +133,11 @@ const modalOpen = ref([false]);
 // Dữ liệu chi tiết cho menu (tên, mô tả, ...)
 const dataDetail = ref<OwnerMenuReq>({
   name: "",
-  foodStoreSeq: "", 
+  code: "",
+  foodStoreSeq: "",
   useYn: "Y",
   description: "",
-  productSeqs: []
+  foodSeqs: []
 });
 
 // Danh sách các món ăn đã chọn để hiển thị trong bảng
@@ -149,7 +157,7 @@ onBeforeMount(async () => {
       ]);
       dataDetail.value = detailRes.data.data;
       selectedFoods.value = productsRes.data.data;
-      listCheckBoxGrid.value = selectedFoods.value.map(p => p.productSeq);
+      listCheckBoxGrid.value = selectedFoods.value.map(p => p.foodSeq);
     } catch (e) {
       console.error("Lỗi khi tải dữ liệu chi tiết menu:", e);
       alert(t("common.message.error"), t("common.alertTitle"), back);
@@ -173,14 +181,14 @@ const closeModal = (index: number) => {
 // Hàm được gọi khi xác nhận chọn món ăn từ Modal
 const handleSelectFood = (foods: OwnerProductResDTO[]) => {
   selectedFoods.value = foods;
-  listCheckBoxGrid.value = selectedFoods.value.map(p => p.productSeq);
+  listCheckBoxGrid.value = selectedFoods.value.map(p => p.foodSeq);
   closeModal(0);
 };
 
 // Xóa một món ăn khỏi danh sách đã chọn
 const removeFood = (index: number) => {
   selectedFoods.value.splice(index, 1);
-  listCheckBoxGrid.value = selectedFoods.value.map(p => p.productSeq);
+  listCheckBoxGrid.value = selectedFoods.value.map(p => p.foodSeq);
 };
 
 const onSave = async () => {
@@ -201,7 +209,7 @@ const onSave = async () => {
         // Tạo một payload duy nhất bao gồm cả thông tin menu và danh sách ID sản phẩm
         const payload: OwnerMenuReq = {
           ...dataDetail.value,
-          productSeqs: selectedFoods.value.map(food => food.productSeq)
+          foodSeqs: selectedFoods.value.map(food => food.foodSeq)
         };
 
         // Gọi một API saveData duy nhất

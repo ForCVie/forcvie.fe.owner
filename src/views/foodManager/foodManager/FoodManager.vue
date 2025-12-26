@@ -101,7 +101,7 @@ const listCheckBoxGrid = ref<string[]>([]);
 const goAction = (item: OwnerProductResDTO) => {
   router.push({
     name: foodManagerRoute.foodManagerForm.name,
-    state: { id: item.productSeq },
+    state: { id: item.foodSeq },
   });
 };
 
@@ -211,13 +211,13 @@ const fnPagination = async (pageNumber: number, pageSize: number) => {
       createdDate: item.createdDate
         ? new Date(item.createdDate).toLocaleDateString("vi-VN")
         : "",
-      checkedFlag: listCheckBoxGrid.value.includes(item.productSeq), // ✅ hiển thị lại đúng trạng thái
+      checkedFlag: listCheckBoxGrid.value.includes(item.foodSeq), // ✅ hiển thị lại đúng trạng thái
     }));
 
     // cập nhật lại trạng thái selectAll nếu tất cả items đều được chọn
     selectAll.value =
       data.value.length > 0 &&
-      data.value.every((item) => listCheckBoxGrid.value.includes(item.productSeq));
+      data.value.every((item) => listCheckBoxGrid.value.includes(item.foodSeq));
   } catch (e) {
     console.error(e);
   } finally {
@@ -246,24 +246,24 @@ const goActionCreate = () => {
 // const goAction = (item: OwnerProductResDTO) => {
 //   router.push({
 //     name: foodManagerRoute.foodManagerForm.name,
-//     state: { id: item.productSeq },
+//     state: { id: item.foodSeq },
 //   });
 // };
 
 function checkChild(value: boolean, rowData: OwnerProductResDTO) {
   rowData.checkedFlag = value;
   if (value) {
-    if (!listCheckBoxGrid.value.includes(rowData.productSeq)) {
-      listCheckBoxGrid.value.push(rowData.productSeq);
+    if (!listCheckBoxGrid.value.includes(rowData.foodSeq)) {
+      listCheckBoxGrid.value.push(rowData.foodSeq);
     }
   } else {
-    const index = listCheckBoxGrid.value.indexOf(rowData.productSeq);
+    const index = listCheckBoxGrid.value.indexOf(rowData.foodSeq);
     if (index !== -1) listCheckBoxGrid.value.splice(index, 1);
   }
 
   selectAll.value =
     data.value.length > 0 &&
-    data.value.every((item) => listCheckBoxGrid.value.includes(item.productSeq));
+    data.value.every((item) => listCheckBoxGrid.value.includes(item.foodSeq));
 }
 
 
@@ -272,11 +272,11 @@ function checkAll(value: boolean) {
   data.value.forEach((item) => {
     item.checkedFlag = value;
     if (value) {
-      if (!listCheckBoxGrid.value.includes(item.productSeq)) {
-        listCheckBoxGrid.value.push(item.productSeq);
+      if (!listCheckBoxGrid.value.includes(item.foodSeq)) {
+        listCheckBoxGrid.value.push(item.foodSeq);
       }
     } else {
-      const index = listCheckBoxGrid.value.indexOf(item.productSeq);
+      const index = listCheckBoxGrid.value.indexOf(item.foodSeq);
       if (index !== -1) listCheckBoxGrid.value.splice(index, 1);
     }
   });
@@ -300,7 +300,7 @@ const handleBulkAction = async (actionType: 'activate' | 'deactivate' | 'remove'
   confirm(selectedAction.confirmMsg, t("common.confirmTitle"), async () => {
     store.setLoading(true);
     try {
-      const payload: OwnerProductActionReq = { productSeqs: listCheckBoxGrid.value };
+      const payload: OwnerProductActionReq = { foodSeqs: listCheckBoxGrid.value };
       await selectedAction.service(payload);
       alert(t("common.message.saveSuccess"), t("common.alertTitle"), () => {
         searchFormData();

@@ -1,7 +1,7 @@
 import { SITE_OWNER } from "@/constants/common.const";
 import http from "@/utils/http";
 import type { OwnerProductFilterReq, OwnerProductReq, OwnerProductActionReq } from "./productMng.type";
-const url = `${SITE_OWNER}/product-mng`;
+const url = `${SITE_OWNER}/food-mng`;
 
 export const getPageData = (data: OwnerProductFilterReq) => {
   return http.post(url + '/list', data);

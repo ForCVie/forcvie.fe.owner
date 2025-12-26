@@ -1,5 +1,5 @@
 export type OwnerProductResDTO = {
-  productSeq: string;
+  foodSeq: string;
   name: string;
   categoryName: string; // Tên danh mục
   useYn: string; // 'Y' hoặc 'N'
@@ -24,7 +24,7 @@ export type OwnerProductFilterReq = {
 
 // DTO cho request tạo/cập nhật sản phẩm
 export type OwnerProductReq = {
-  productSeq?: string;
+  foodSeq?: string;
   foodStoreSeq: string;
   sizeSeq: string;
   name: string;
@@ -41,5 +41,5 @@ export type OwnerProductDetailDTO = OwnerProductReq & {};
 
 // DTO cho các hành động hàng loạt
 export type OwnerProductActionReq = {
-  productSeqs: string[];
+  foodSeqs: string[];
 };
