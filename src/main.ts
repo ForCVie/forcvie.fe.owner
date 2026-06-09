@@ -6,7 +6,6 @@ import '../node_modules/ag-grid-community/styles/ag-theme-alpine.css'
 
 import VueSweetalert2 from 'vue-sweetalert2'
 import "@/assets/style/_sweetaleart.scss";
-import vuetify from "@/plugins/vuetify";
 import 'sweetalert2/dist/sweetalert2.min.css'
 import VueSelect from "@/components/common/vueSelect/VueSelect.vue";
 
@@ -32,7 +31,6 @@ pinia.use(createPersistedState());
 app.use(pinia)
 app.use(i18n)
 app.component('QuillEditor', QuillEditor)
-app.use(vuetify);
 app.use(router);
 app.use(global);
 app.use(VueSweetalert2)

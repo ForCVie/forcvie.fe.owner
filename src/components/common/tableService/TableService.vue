@@ -21,20 +21,10 @@
     </div>
   </div>
 
-  <!-- Popup -->
-  <ModalSeatManager
-  v-if="modalOpen[0]"
-    :isOpen="modalOpen[0]"
-    :dataSelect="dataSelect"
-    @closeModal="closeModal(0)"
-    @confirmAction="addTable"
-    @cancelAction="closeModal(0)"
-  />
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import ModalSeatManager from "@/views/seatManager/seatManager/popup/ModalSeatManager.vue";
 import { StoreTableResDTO } from "@/stores/seatManager/seatManager/seatManager.type";
 
 const props = defineProps<{
