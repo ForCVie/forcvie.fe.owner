@@ -4,7 +4,7 @@
 table {
 	position: relative;
 	width: 100%;
-	text-align: center; font-size: 16px;
+	font-size: 14px;
 	background-color: var(--white-color);
 	border-collapse: collapse;
 }
@@ -13,7 +13,7 @@ table::before {
 	content: "";
 	display: block;
 	width: 100%; height: 1px;
-	/* background-color: var(--black-color); */
+	background-color: var(--light2);
 }
 .ag-header-select-all {
 	margin: 0 !important;
@@ -66,25 +66,25 @@ table .icon_only {
 }
 
 table tr.disabled, table tr[disabled] {
-	/* background-color: var(--tb-bg--color); */
+	background-color: var(--tb-bg--color);
 }
 
 .tbl_row tbody th {
-	padding: 8px 5px 8px 24px;
+	padding: 8px 24px;
 	font-weight: 500; color: var(--tb-text--color);
-	/* background-color: var(--tb-bg--color); */
-	/* border-bottom: 1px solid  var(--light-blue-gray); */
+	background-color: var(--tb-bg--color);
+	border-bottom: 1px solid  var(--light-blue-gray);
 }
 .tbl_row tbody td {
-	padding: 8px 0px;
+	padding: 8px 24px;
 	font-weight: 500;
-	/* border-bottom: 1px solid  var(--light-blue-gray); */
+	border-bottom: 1px solid  var(--light-blue-gray);
 }
 .tbl_row tfoot th, .tbl_row tfoot td {
 	padding: 8px 24px;
 }
 .tbl_hover tbody tr:hover {
-	/* background-color: rgba(237, 239, 242, 0.50); */
+	background-color: rgba(237, 239, 242, 0.50);
 }
 .tbl_hover tbody tr.check {
 	background-color: #F1F7FB;
@@ -139,7 +139,7 @@ tr > td.active {
 /* region Start of datePicker styling */
 .datepicker_container {
 	position: relative;
-	width: 100%;
+	/* width: 100%; */
 }
 .datepicker-wrapper {
 	margin-top: 4px;

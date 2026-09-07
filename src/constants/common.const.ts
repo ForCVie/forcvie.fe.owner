@@ -1,4 +1,4 @@
-export const ACCESS_TOKEN = "";
+export const ACCESS_TOKEN = "sso-token";
 export const USER_INFO = "user_info";
 export const COLOR = ["#ff8365", "#86ff00", "#003aff", "#ffdf00", "#E91E63"];
 export const STATUS_0 = "0";

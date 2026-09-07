@@ -1,17 +1,19 @@
 import axios from 'axios'
-import type { AxiosInstance } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import router from "@/router";
 import {removeUserInfo} from "@/utils/storage";
 import {decode} from "html-entities";
 import {SCREEN} from "@/router/screen";
 import commonService from "@/service/common/CommonService";
+import { ACCESS_TOKEN } from '@/constants/common.const';
+import { getToken } from './cookies';
 
 class Http {
     instance: AxiosInstance
 
     constructor() {
         this.instance = axios.create({
-            baseURL: import.meta.env.VITE_API_ENDPOINT,
+            // baseURL: import.meta.env.VITE_API_ENDPOINT,
             headers: {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -34,6 +36,11 @@ class Http {
                   config.headers["x-api-screen-name"] = currentRoute.name;
                 }
               }
+              const token = getToken();
+              console.log(token)
+              if (token) {
+                config.headers[`${ACCESS_TOKEN}`] = token;
+              }
                 return config
             },
             (error) => Promise.reject(error)
@@ -44,7 +51,6 @@ class Http {
                 if (response) {
                     response = decodeHtmlEntities(response);
                 }
-
                 return response
             },
             async (error) => {
@@ -71,6 +77,60 @@ class Http {
             }
         )
     }
+
+    getByCode<T = any>(
+        code: string,
+        config?: AxiosRequestConfig
+    ) {
+        return this.instance.get<T>(config?.baseURL ?? import.meta.env.VITE_API_ENDPOINT, {
+            ...config,
+            headers: {
+                ...config?.headers,
+                TARGET: code
+            }
+        })
+    }
+
+    postByCode<T = any>(
+        code: string,
+        data?: any,
+        config?: AxiosRequestConfig,
+    ) {
+        return this.instance.post<T>(config?.baseURL ?? import.meta.env.VITE_API_ENDPOINT, data, {
+            ...config,
+            headers: {
+                ...config?.headers,
+                TARGET: code
+            }
+        })
+    }
+
+    putByCode<T = any>(
+        code: string,
+        data?: any,
+        config?: AxiosRequestConfig
+    ) {
+        return this.instance.put<T>(config?.baseURL ?? import.meta.env.VITE_API_ENDPOINT, data, {
+            ...config,
+            headers: {
+                ...config?.headers,
+                TARGET: code
+            }
+        })
+    }
+
+    deleteByCode<T = any>(
+        code: string,
+        config?: AxiosRequestConfig
+    ) {
+        return this.instance.delete<T>(config?.baseURL ?? import.meta.env.VITE_API_ENDPOINT, {
+            ...config,
+            headers: {
+                ...config?.headers,
+                TARGET: code
+            }
+        })
+    }
 }
 
 function decodeHtmlEntities(data:any):any {
@@ -91,6 +151,5 @@ function decodeHtmlEntities(data:any):any {
     }
 }
 
-const http = new Http().instance
-// http.defaults.withCredentials = true
+const http = new Http()
 export default http

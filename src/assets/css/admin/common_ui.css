@@ -205,8 +205,7 @@ html:has(body.on) .header_wrap {
   height: 72px;
   align-items: center; justify-content: center;
   text-align: center;
-  border-bottom: 1px solid var(--light1);    
-  /* margin: 0 15px; */
+  border-bottom: 1px solid var(--light1);
 }
 .header_top.border_bn {
   border-bottom: 1px solid transparent !important;
@@ -244,6 +243,18 @@ html:has(body.on) .header_wrap {
   align-items: center;
   font-size: 1.2rem; font-weight: 500;
   width: auto; height: 36px;
+}
+.header_function .btn_logout::before, .header_function .btn_login::before {
+  content: "";
+  display: inline-block;
+  margin-right: 2px;
+  width: 34px; height: 34px;
+}
+.header_function .btn_logout::before {
+  background: url(../../images/common/icon_logout.svg) no-repeat center;
+}
+.header_function .btn_login::before {
+  background: url(../../images/common/icon_login.svg) no-repeat center;
 }
 
 .login_info {

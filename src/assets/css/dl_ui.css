@@ -55,7 +55,7 @@ button, .label, .button {
     display: inline-flex;
     padding: 6px 12px;
     align-items: center; justify-content: center;
-    font-size: 1.4rem; font-weight: 500; text-align: center;
+    font-size: 0.875rem; font-weight: 500; text-align: center;
     transition: 0.2s;
     cursor: pointer;
     border-radius: 4px;
@@ -65,10 +65,6 @@ button[disabled] {
     cursor: not-allowed;
 }
 /* Button size */
-.btn_xs {
-    height: 32px;
-}
-
 .btn_sm {
     padding: 10px 20px;
 }
@@ -347,79 +343,76 @@ button[disabled] {
 /* endregion */
 
 /* region Start of input, textarea styling*/
-input, textarea {
+/* Các loại input được áp dụng style */
+input:is([type="text"], [type="number"], [type="password"]),
+textarea {
     position: relative;
     padding: 10px 12px;
-    /*max-width: 100%;*/
     width: 100%;
     font-size: 16px;
     background-repeat: no-repeat;
     border: 1px solid var(--light-blue-gray);
     border-radius: 4px !important;
-    color: var(--tb-text--color);
 }
 
-input {
+input:is([type="text"], [type="number"], [type="password"]) {
     height: 40px;
 }
-input[disabled], input[disabled]::placeholder {
-}
 
-input[disabled], textarea[disabled] {
+/* Disabled */
+input:is([type="text"], [type="number"], [type="password"])[disabled],
+textarea[disabled] {
     color: #ACAEAFFF !important;
     background-color: transparent !important;
     border-color: var(--light-blue-gray) !important;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    white-space: nowrap; /* Prevents line breaks */
-    text-overflow: ellipsis; /* Adds ellipsis when content overflows */
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-input[disabled]::placeholder, textarea[disabled]::placeholder {
+input:is([type="text"], [type="number"], [type="password"])[disabled]::placeholder,
+textarea[disabled]::placeholder {
     color: #ACAEAFFF !important;
-    white-space: nowrap; /* Prevents line breaks */
-    overflow: hidden; /* Hides overflow */
-    text-overflow: ellipsis; /* Adds ellipsis when content overflows */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-input::placeholder, textarea::placeholder {
+/* Placeholder */
+input:is([type="text"], [type="number"], [type="password"])::placeholder,
+textarea::placeholder {
     color: #767676;
 }
 
-input:focus:not([readonly]), textarea:focus:not([readonly]) {
-    border-color: var(--black-color);
-}
-input:focus:not(:disabled):not([readonly]),
+/* Focus */
+input:is([type="text"], [type="number"], [type="password"]):focus:not(:disabled):not([readonly]),
 textarea:focus:not(:disabled):not([readonly]) {
     border-color: var(--black-color);
 }
 
-input.xs {
+/* Sizes */
+input:is([type="text"], [type="number"], [type="password"]).xs {
     width: 130px;
 }
 
-input.sm {
+input:is([type="text"], [type="number"], [type="password"]).sm {
     width: 150px;
 }
 
-input.md {
+input:is([type="text"], [type="number"], [type="password"]).md {
     width: 180px;
 }
 
-input.lg {
+input:is([type="text"], [type="number"], [type="password"]).lg {
     width: 200px;
 }
 
-input.xl {
+input:is([type="text"], [type="number"], [type="password"]).xl {
     width: 250px;
 }
-input.btn_light_blue:hover,
-input.btn_light_blue:active {
-    background: var(--light-blue);
-    color: var(--dim-gray) !important;
-}
 
-/*resize*/
+/* Resize */
 textarea.resize {
     resize: both;
 }
@@ -544,7 +537,8 @@ textarea.resize {
 
 /* region Start of check box */
 .check_row {
-    display: inline-block;
+    display: flex !important;
+    align-items: center;
     margin-right: 15px;
 }
 
@@ -942,7 +936,7 @@ body > .loading_box {
 
 /* region Breadcrum */
 .page_title {
-    /* padding-right: 330px; */
+    padding-right: 330px;
     font-size: 1.5rem;
     font-weight: 700;
     line-height: 1em;
