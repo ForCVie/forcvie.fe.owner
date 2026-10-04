@@ -1,126 +1,221 @@
 <template>
-  <textarea
-      v-bind="attrs"
-      :value="props.modelValue"
-      @input="onInput"
-      rows="5"
-      class="custom-input"
-      @focus="checkError"
-      @keyup="checkError"
-  />
+  <div class="textarea-wrapper" :class="{ 'has-error': hasError }">
+    <!-- 1. Label tích hợp -->
+    <label v-if="label" :for="elementId" class="textarea-label">
+      {{ label }}
+      <span v-if="isRequired" class="required-star">*</span>
+    </label>
+
+    <!-- 2. Textarea Field -->
+    <div class="textarea-field-container">
+      <textarea
+        :id="elementId"
+        ref="textareaRef"
+        v-bind="attrs"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :rows="rows"
+        class="custom-textarea"
+        @input="onInput"
+        @blur="onBlur"
+        @focus="onFocus"
+      />
+    </div>
+
+    <!-- 3. Thông báo lỗi -->
+    <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+  </div>
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, onMounted, onBeforeUnmount, onUpdated, useAttrs} from 'vue'
-import {commonStore} from '@/stores/common'
+import { ref, computed, watch, onMounted, onBeforeUnmount, onUpdated, useAttrs, nextTick } from 'vue'
+import { commonStore } from '@/stores/common'
 
-const attrs = useAttrs()
-const props = defineProps(['modelValue', 'resizeAuto'])
-const emit = defineEmits(['update:modelValue'])
-
-const store = commonStore()
-let timeout: NodeJS.Timeout | null = null
-
-onMounted(() => {
-  if (props.resizeAuto && attrs.id) {
-    const textArea = document.getElementById(attrs.id as string) as HTMLTextAreaElement;
-
-    const computedStyle = window.getComputedStyle(textArea);
-    const paddingNode = {
-      top: parseFloat(computedStyle.paddingTop),
-      right: parseFloat(computedStyle.paddingRight),
-      bottom: parseFloat(computedStyle.paddingBottom),
-      left: parseFloat(computedStyle.paddingLeft),
-    };
-    const borderNode = {
-      top: parseFloat(computedStyle.borderTopWidth),
-      right: parseFloat(computedStyle.borderRightWidth),
-      bottom: parseFloat(computedStyle.borderBottomWidth),
-      left: parseFloat(computedStyle.borderLeftWidth),
-    };
-
-    const nodeReality = textArea.getBoundingClientRect().height
-        - paddingNode.top
-        - paddingNode.bottom
-        - borderNode.top
-        - borderNode.bottom;
-
-    const heightRow = nodeReality / textArea.rows;
-
-    const parentNode = textArea.parentElement as HTMLElement;
-    if (!parentNode) {
-      console.error('Parent node not found.');
-      return;
-    }
-
-    const computedStyleParentNode = window.getComputedStyle(parentNode);
-    const paddingParentNode = {
-      top: parseFloat(computedStyleParentNode.paddingTop),
-      right: parseFloat(computedStyleParentNode.paddingRight),
-      bottom: parseFloat(computedStyleParentNode.paddingBottom),
-      left: parseFloat(computedStyleParentNode.paddingLeft),
-    };
-    const borderParentNode = {
-      top: parseFloat(computedStyleParentNode.borderTopWidth),
-      right: parseFloat(computedStyleParentNode.borderRightWidth),
-      bottom: parseFloat(computedStyleParentNode.borderBottomWidth),
-      left: parseFloat(computedStyleParentNode.borderLeftWidth),
-    };
-
-    const parentNodeReality = parentNode.getBoundingClientRect().height
-        - paddingParentNode.top
-        - paddingParentNode.bottom
-        - borderParentNode.top
-        - borderParentNode.bottom;
-
-    if (heightRow > 0) {
-      textArea.rows = Math.floor(parentNodeReality / heightRow) - 2;
-    } else {
-      console.error('Invalid height per row.');
-    }
-  }
-});
-
-const onInput = (event) => {
-  if (timeout) {
-    clearTimeout(timeout)
-    timeout = null
-  }
-
-  timeout = setTimeout(() => {
-    emit('update:modelValue', event.target.value)
-  }, 50)
+// 1. Props Definition
+interface Props {
+  modelValue?: string
+  label?: string
+  placeholder?: string
+  rows?: number | string
+  resizeAuto?: boolean
 }
 
-onMounted(() => {
-  if (attrs.id && attrs.required !== undefined) {
-    store.setRequired(attrs.id)
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  label: '',
+  placeholder: '',
+  rows: 4,
+  resizeAuto: false
+})
+
+// 2. Emits
+const emit = defineEmits<{
+  (e: 'update:modelValue', val: string): void
+  (e: 'blur', event: FocusEvent): void
+  (e: 'focus', event: FocusEvent): void
+}>()
+
+const attrs = useAttrs()
+const store = commonStore()
+
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
+const errorMessage = ref('')
+const hasError = computed(() => !!errorMessage.value)
+let timeout: ReturnType<typeof setTimeout> | null = null
+
+// Tự sinh ID nếu không truyền
+const elementId = computed(() => (attrs.id as string) || `textarea-${Math.random().toString(36).substring(2, 9)}`)
+const isRequired = computed(() => attrs.required !== undefined && attrs.required !== false)
+
+// Tự động điều chỉnh chiều cao theo nội dung
+const adjustHeight = () => {
+  if (!props.resizeAuto || !textareaRef.value) return
+  const el = textareaRef.value
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
+}
+
+// Validation logic
+const validateInput = (val: string) => {
+  if (isRequired.value && (!val || val.trim() === '')) {
+    errorMessage.value = 'Trường này là bắt buộc'
+  } else {
+    errorMessage.value = ''
+  }
+}
+
+// Event Handlers
+const onInput = (event: Event) => {
+  const target = event.target as HTMLTextAreaElement
+  const val = target.value
+
+  if (props.resizeAuto) {
+    adjustHeight()
+  }
+
+  // Debounce ngắn để sync v-model
+  if (timeout) clearTimeout(timeout)
+  timeout = setTimeout(() => {
+    emit('update:modelValue', val)
+  }, 50)
+
+  validateInput(val)
+}
+
+const onBlur = (event: FocusEvent) => {
+  const target = event.target as HTMLTextAreaElement
+  validateInput(target.value)
+  emit('blur', event)
+}
+
+const onFocus = (event: FocusEvent) => {
+  const target = event.target as HTMLTextAreaElement
+  validateInput(target.value)
+  emit('focus', event)
+}
+
+// Watcher & Lifecycle Hooks
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    validateInput(newVal || '')
     store.checkRequired()
+    nextTick(() => {
+      if (props.resizeAuto) adjustHeight()
+    })
+  }
+)
+
+onMounted(() => {
+  const id = elementId.value
+  if (isRequired.value && id) {
+    store.setRequired(id)
+  }
+  store.checkRequired()
+  if (props.resizeAuto) {
+    adjustHeight()
   }
 })
 
 onBeforeUnmount(() => {
-  if (attrs.id && attrs.required !== undefined) {
-    store.removeRequired(attrs.id)
+  const id = elementId.value
+  if (isRequired.value && id) {
+    store.removeRequired(id)
   }
-  clearTimeout(timeout)
+  if (timeout) clearTimeout(timeout)
 })
 
 onUpdated(() => {
   store.checkRequired()
 })
-
-const checkError = () => {
-  if (attrs.id && attrs.required !== undefined) {
-    const input = document.getElementById(attrs.id)
-    if (input && !input.value) {
-      input.classList.add('error_validate')
-    } else if (input) {
-      input.classList.remove('error_validate')
-    }
-  }
-}
 </script>
 
 <style scoped>
+.textarea-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  margin-bottom: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Label chuẩn hóa đồng bộ với CustomInput & SelectBoxBase */
+.textarea-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155; /* slate-700 */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 20px;
+}
+
+.required-star {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.textarea-field-container {
+  width: 100%;
+}
+
+.custom-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1e293b; /* slate-800 */
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1; /* slate-300 */
+  border-radius: 4px; /* Bo góc 4px đồng bộ */
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  resize: vertical; /* Cho phép kéo giãn dọc theo mặc định */
+}
+
+.custom-textarea:focus {
+  border-color: #f97316; /* Viền màu cam focus đồng bộ */
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.custom-textarea::placeholder {
+  color: #94a3b8; /* slate-400 */
+}
+
+/* Trạng thái Lỗi */
+.has-error .custom-textarea {
+  border-color: #ef4444;
+}
+
+.has-error .custom-textarea:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.error-text {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 2px;
+}
 </style>

@@ -34,6 +34,11 @@ export const routes = [
         meta: {title: 'TemplateUi'},
         component: getView('TemplateUiYeongsang'),
       },
+      {
+        path: '/template-dang-ky',
+        name: 'templateDangKy',
+        component: getView('Template_FormDangKy')
+      },
       ...getRouteItems(storeManagerRoute),
       ...getRouteItems(storeOrderRoute),
       ...getRouteItems(employeeManagerRoute),

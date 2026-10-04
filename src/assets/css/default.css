@@ -32,3 +32,86 @@
 ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Container chính của Toast */
+.swal2-popup.custom-swal-toast {
+  display: flex !important;
+  align-items: center !important;
+  padding: 10px 16px !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #f3f4f6 !important;
+  font-family: inherit !important;
+}
+
+/* Tiêu đề Toast */
+.custom-swal-title {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #1f2937 !important;
+  margin: 0 0 0 8px !important;
+  padding: 0 !important;
+}
+
+/* Kích thước Icon */
+.custom-swal-icon {
+  margin: 0 !important;
+  transform: scale(0.7) !important;
+}
+
+/* Tùy chỉnh màu Icon theo loại */
+.swal2-icon.swal2-error {
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+}
+.swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+  background-color: #ef4444 !important;
+}
+
+.swal2-icon.swal2-success {
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+}
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: #10b981 !important;
+}
+
+.swal2-icon.swal2-warning {
+  border-color: #f97316 !important; /* Tông màu cam thương hiệu */
+  color: #f97316 !important;
+}
+
+/* Thanh Progress đếm ngược thời gian */
+.custom-swal-progress {
+  background-color: #f97316 !important; /* Màu thanh chạy đếm ngược */
+  height: 3px !important;
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+}
+
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  margin-bottom: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Label */
+.input-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155; /* slate-700 */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 20px;
+}
+
+.required-star {
+  color: #ef4444;
+  font-weight: bold;
+}

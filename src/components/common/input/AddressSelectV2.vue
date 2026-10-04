@@ -1,8 +1,6 @@
 <template>
     <div class="address-container">
-        <div class="selected-address" @click="toggleSelector">
-            {{ displayAddress }}
-        </div>
+        <input class="selected-address" readonly @click="toggleSelector" v-model="displayAddress" placeholder="Chọn Tỉnh/Thành phố, Phường/Xã" />
 
         <div v-show="isOpen" class="address-selector">
             <div class="tabs">
@@ -69,9 +67,9 @@ const store = locationStore();
 const provinces = ref([]);
 
 onBeforeMount(async () => {
-    await store.getProvinces(); // API call thực tế
-    provinces.value = store.provinces.data; // Lấy data thực tế
-    // provinces.value = mockData; // Dùng data mẫu
+    // await store.getProvinces(); // API call thực tế
+    // provinces.value = store.provinces.data; // Lấy data thực tế
+    provinces.value = mockData; // Dùng data mẫu
 
     // Khởi tạo modelValue sau khi có dữ liệu
     if (props.modelValue) {
@@ -113,7 +111,7 @@ const availableWardsFlat = computed(() => {
 const displayAddress = computed(() => {
     if (selectedWard.value) return `${selectedWard.value.name}, ${selectedProvince.value.name}`;
     if (selectedProvince.value) return selectedProvince.value.name;
-    return "Chọn Tỉnh/Thành phố, Phường/Xã";
+    return "";
 });
 
 const filteredProvinces = computed(() => {
@@ -234,7 +232,7 @@ const resetSelection = () => {
 <style scoped>
 :root {
     --primary: #0b74e5;
-    --border-color: #d1d5db;
+    --border-color: #cbd5e1;
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -249,7 +247,7 @@ const resetSelection = () => {
 /* 2. SELECTED ADDRESS: Thiết kế như một select box */
 .selected-address { 
     width: 100%;
-    border: 1px solid var(--border-color); 
+    border: 1px solid #cbd5e1; 
     padding: 10px 12px; 
     border-radius: 6px; 
     cursor: pointer; 
@@ -263,9 +261,9 @@ const resetSelection = () => {
     background-color: #fff;
     box-sizing: border-box;
 }
-.selected-address:hover {
+/* .selected-address:hover {
     border-color: var(--primary);
-}
+} */
 .selected-address::after { 
     content: '▼'; 
     position: absolute; 

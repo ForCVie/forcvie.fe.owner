@@ -59,38 +59,89 @@ textarea:-ms-input-placeholder {
 	color: var(--light3) !important; font-weight: 500 !important; font-size: .8rem !important;
   opacity: 1 !important;
 }
+/* ==========================================
+   SWEETALERT2 CUSTOM TOAST STYLES & ANIMATION
+   ========================================== */
 
-/* sweetalert2 */
+/* Container chính của Toast */
 .swal2-popup.swal2-toast.swal2-show.custom_toast {
-  bottom: 24px;
-  padding: 18px 24px;
-  background-color: rgba(34,34,34, 0.9);
-  border-radius: 8px;
-  animation: customToast 0.5s alternate;
+  bottom: 28px !important;
+  padding: 14px 24px !important;
+  background-color: rgba(30, 30, 30, 0.92) !important;
+  backdrop-filter: blur(8px); /* Tạo hiệu ứng mờ kính hiện đại */
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
+  
+  /* Căn giữa tuyệt đối nội dung */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  
+  /* Kích thước linh hoạt, vừa vặn với nội dung */
+  width: auto !important;
+  min-width: 280px !important;
+  max-width: 420px !important;
+
+  /* Hiệu ứng hiển thị mượt mà */
+  animation: toastSmoothSlide 3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
-@keyframes customToast {
+
+/* Keyframes hiệu ứng Slide + Smooth Spring */
+@keyframes toastSmoothSlide {
+  /* 0% -> 15%: Trượt từ dưới lên + Fade In + Nảy nhẹ */
   0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px) scale(0.95);
   }
-  100% {
+  15% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
-}
-.swal2-toast.custom_toast .swal2-title {
-  color: #fff !important; font-size: .8rem; font-weight: 500; line-height: 2.2rem;
-}
-body.swal2-toast-shown .swal2-container:has(.custom_toast) {
-  width: 262px;
-}
-.swal2-popup.swal2-toast.custom_toast .swal2-title {
-  margin: 0;
-}
-.swal2-popup.swal2-toast.custom_toast .swal2-html-container {
-  font-size: .8rem; color: #fff;
+  
+  /* 15% -> 85%: Giữ nguyên vị trí ổn định để đọc */
+  85% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  
+  /* 85% -> 100%: Mờ dần và trượt nhẹ xuống dưới */
+  100% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
 }
 
+/* Căn chỉnh chữ Title */
+.swal2-toast.custom_toast .swal2-title,
+.swal2-popup.swal2-toast.custom_toast .swal2-title {
+  color: #ffffff !important;
+  font-size: 0.95rem !important; /* Cỡ chữ to rõ, chuẩn UI (~15px) */
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+  width: 100% !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Căn chỉnh nội dung HTML (nếu có) */
+.swal2-popup.swal2-toast.custom_toast .swal2-html-container {
+  color: #e5e7eb !important;
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
+  margin-top: 4px !important;
+}
+
+/* Đảm bảo khung bọc Swal2 không bó hẹp width */
+body.swal2-toast-shown .swal2-container:has(.custom_toast) {
+  width: auto !important;
+}
 .link:hover {
   text-decoration: underline;
   text-underline-offset: 5px;

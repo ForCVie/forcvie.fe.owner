@@ -7,7 +7,6 @@ import '../node_modules/ag-grid-community/styles/ag-theme-alpine.css'
 import VueSweetalert2 from 'vue-sweetalert2'
 import "@/assets/style/_sweetaleart.scss";
 import 'sweetalert2/dist/sweetalert2.min.css'
-import VueSelect from "@/components/common/vueSelect/VueSelect.vue";
 
 import "@/assets/css/default.css";
 
@@ -18,7 +17,7 @@ import 'animate.css'
 /** css파일 */
 
 // import "@/assets/scss/_Sweetalert.scss";
-
+import 'vue-select/dist/vue-select.css'
 import { createPinia } from 'pinia'
 
 const app = createApp(App);
@@ -34,5 +33,4 @@ app.component('QuillEditor', QuillEditor)
 app.use(router);
 app.use(global);
 app.use(VueSweetalert2)
-app.component("VueSelect", VueSelect);
 app.mount("#app");

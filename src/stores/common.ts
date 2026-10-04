@@ -26,7 +26,7 @@ export const commonStore = defineStore('common', () => {
 
     arrRequired.value.forEach(id => {
       const inputElement = document.getElementById(id);
-      if (inputElement ) {
+      if (inputElement) {
         arr = [...arr, {
           id: id,
           count: inputElement.value.length,

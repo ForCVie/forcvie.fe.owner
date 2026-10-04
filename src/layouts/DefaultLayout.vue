@@ -104,7 +104,7 @@
 
         
         <!-- MAIN CONTENT -->
-        <div class="flex-1 flex flex-col h-full overflow-y-auto relative w-full bg-[#f4f7f9]">
+        <div class="flex-1 flex flex-col h-full overflow-y-auto relative w-full bg-[#f4f7f9] mb-14">
           <router-view v-slot="{ Component, route }">
             <transition
               :enter-active-class="`animate__faster animate__animated animate__fadeInRight`"

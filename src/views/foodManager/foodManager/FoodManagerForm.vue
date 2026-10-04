@@ -110,6 +110,7 @@ import { OwnerProductReq } from "@/stores/foodOrder/productMng/productMng.type";
 import { getLstAll } from "@/stores/foodOrder/sizeMng/sizeMng.service";
 import ModalSizeForm from "../sizeManager/popup/ModalSizeForm.vue";
 import ModalProductCategoryForm from "../productCategoryManager/popup/ModalProductCategoryForm.vue";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const store = commonStore();

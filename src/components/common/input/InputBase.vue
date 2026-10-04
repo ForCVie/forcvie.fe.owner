@@ -1,135 +1,229 @@
 <template>
-  <input
-      type="text"
-      v-bind="attrs"
-      v-model="inputValue"
-      @input="onInput"
-      class="custom-input"
-      @keyup="checkError"
-      @focus="checkError">
+  <div class="input-wrapper" :class="{ 'has-error': errorMessage }">
+    <!-- Label Component -->
+    <label v-if="label" :for="inputId" class="input-label">
+      {{ label }}
+      <span v-if="isRequired" class="required-star">*</span>
+    </label>
+
+    <div class="input-field-container">
+      <input
+        :id="inputId"
+        type="text"
+        v-bind="attrs"
+        :value="inputValue"
+        @input="onInput"
+        @blur="onBlur"
+        @focus="onFocus"
+        class="custom-input"
+        :placeholder="placeholder"
+      />
+    </div>
+
+    <!-- Thông báo lỗi bên dưới input -->
+    <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+  </div>
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, onMounted, onBeforeUnmount, onUpdated, useAttrs} from 'vue'
-import {commonStore} from '@/stores/common'
+import {
+  ref,
+  computed,
+  watch,
+  useAttrs,
+  onMounted,
+  onBeforeUnmount,
+  onUpdated,
+} from "vue";
+import { commonStore } from "@/stores/common";
 
-const attrs = useAttrs()
-const props = defineProps({
-  modelValue: {
-    type: [String, Number],
-    required: true,
-  },
-  isNumber: {
-    type: Boolean,
-    default: false,
-  },
-  minValue: {
-    type: Number,
-  },
-  maxValue: {
-    type: Number,
-  },
-  decimalPlaces:{
-    type: Number,
-    default: 2,
-  }
+// 1. Props Definition
+interface Props {
+  modelValue: string | number;
+  label?: string;
+  placeholder?: string;
+  isNumber?: boolean;
+  minValue?: number;
+  maxValue?: number;
+  decimalPlaces?: number;
+  id?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: "",
+  label: "",
+  placeholder: "",
+  isNumber: false,
+  decimalPlaces: 2,
 });
-const emit = defineEmits(['update:modelValue'])
 
-const store = commonStore()
-let timeout: NodeJS.Timeout | null = null
-const inputValue = ref(props.modelValue)
-const regex = new RegExp(`^[0-9]*\\.?[0-9]{0,${props.decimalPlaces}}$`);
+// 2. Emits
+const emit = defineEmits<{
+  (e: "update:modelValue", value: string | number): void;
+  (e: "blur", event: FocusEvent): void;
+  (e: "focus", event: FocusEvent): void;
+}>();
 
-let stampValue = '';
+const attrs = useAttrs();
+const store = commonStore();
 
-const onInput = (event) => {
+// Tạo unique ID nếu không truyền id từ attrs
+const inputId = computed(
+  () =>
+    (props.id as string) ||
+    `input-${Math.random().toString(36).substring(2, 9)}`,
+);
+const isRequired = computed(
+  () => attrs.required !== undefined && attrs.required !== false,
+);
+
+const errorMessage = ref("");
+let timeout: ReturnType<typeof setTimeout> | null = null;
+let stampValue = "";
+
+// Dynamic Regex theo decimalPlaces
+const regex = computed(
+  () => new RegExp(`^[0-9]*\\.?[0-9]{0,${props.decimalPlaces}}$`),
+);
+
+// Synchronize Value với parent component
+const inputValue = computed({
+  get: () => props.modelValue,
+  set: (val) => emit("update:modelValue", val),
+});
+
+// 3. Input Handlers
+const onInput = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  let val = target.value;
+
   if (props.isNumber) {
-    const target = event.target as HTMLInputElement
-    let value = target.value
+    // Chỉ giữ lại số và dấu chấm
+    val = val.replace(/[^0-9.]/g, "");
 
-    // Step 1: Remove all characters that are not digits or decimal points
-    inputValue.value = value.replace(/[^0-9.]/g, '')
-
-    // Step 2: Handle leading zeros if present
-    if (inputValue.value.length > 1 && inputValue.value.startsWith('0') && !inputValue.value.startsWith('0.')) {
-      inputValue.value = inputValue.value.replace(/^0+/, '');
+    // Xử lý số 0 ở đầu (ví dụ: "05" -> "5", trừ "0.x")
+    if (val.length > 1 && val.startsWith("0") && !val.startsWith("0.")) {
+      val = val.replace(/^0+/, "");
     }
 
-    // Step 3: Handle decimal points and multiple dots
-    if(regex.test(inputValue.value)){
-      stampValue = inputValue.value
-    }
-    inputValue.value = stampValue
-
-    const hasMultipleDots = (inputValue.value.match(/[.]/g) || []).length > 1
-    if (hasMultipleDots) {
-      inputValue.value = inputValue.value.slice(0, value.length - 1)
+    // Xử lý số lượng chữ số thập phân
+    if (regex.value.test(val)) {
+      stampValue = val;
+    } else {
+      val = stampValue;
     }
 
-    // Step 4: Handle leading decimal points
-    if (inputValue.value.startsWith('.')) {
-      inputValue.value = '0' + inputValue.value
+    // Tự động thêm '0' nếu bắt đầu bằng dấu chấm
+    if (val.startsWith(".")) {
+      val = "0" + val;
     }
 
-    // Step 5: Check and handle numeric values
-    const numericValue = parseFloat(inputValue.value);
-    if (!isNaN(numericValue) && typeof props.minValue !== 'undefined' && typeof props.maxValue !== 'undefined') {
-      if (numericValue < +props.minValue) {
-        inputValue.value = props.minValue;
-      } else if (numericValue > +props.maxValue) {
-        inputValue.value = props.maxValue;
+    // Kiểm tra min/max
+    const numericValue = parseFloat(val);
+    if (!isNaN(numericValue)) {
+      if (props.minValue !== undefined && numericValue < props.minValue) {
+        val = props.minValue.toString();
+      } else if (
+        props.maxValue !== undefined &&
+        numericValue > props.maxValue
+      ) {
+        val = props.maxValue.toString();
       }
     }
 
-    emit('update:modelValue', inputValue.value)
+    inputValue.value = val;
   } else {
-    if (timeout) {
-      clearTimeout(timeout)
-      timeout = null
-    }
-
+    // Debounce ngắn cho text thông thường
+    if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => {
-      inputValue.value = event.target.value
-      emit('update:modelValue', event.target.value)
-    }, 50)
+      inputValue.value = val;
+    }, 50);
   }
-}
 
-const checkError = () => {
-  if (attrs.id && attrs.required !== undefined) {
-    const input = document.getElementById(attrs.id)
-    if (input && !input.value) {
-      input.classList.add('error_validate')
-    } else if (input) {
-      input.classList.remove('error_validate')
-    }
+  validateInput(val);
+};
+
+const onBlur = (event: FocusEvent) => {
+  validateInput(inputValue.value.toString());
+  emit("blur", event);
+};
+
+const onFocus = (event: FocusEvent) => {
+  emit("focus", event);
+};
+
+// Validation logic
+const validateInput = (val: string) => {
+  if (isRequired.value && (!val || val.trim() === "")) {
+    errorMessage.value = "Trường này là bắt buộc";
+  } else {
+    errorMessage.value = "";
   }
-}
+};
 
+// 4. Lifecycle Hooks & Store Integration
 onMounted(() => {
-  if (attrs.id && attrs.required !== undefined) {
-    store.setRequired(attrs.id)
-    store.checkRequired();
+  const id = inputId.value;
+  if (isRequired.value && id) {
+    store.setRequired(id);
   }
-  store.checkRequired()
-})
+  store.checkRequired();
+});
 
 onBeforeUnmount(() => {
-  if (attrs.id && attrs.required !== undefined) {
-    store.removeRequired(attrs.id)
+  const id = inputId.value;
+  if (isRequired.value && id) {
+    store.removeRequired(id);
   }
-  clearTimeout(timeout)
-})
+  if (timeout) clearTimeout(timeout);
+});
 
 onUpdated(() => {
-  store.checkRequired()
-})
-watch(() => props.modelValue,()=>{
-  inputValue.value = props.modelValue
-})
+  store.checkRequired();
+});
 </script>
 
 <style scoped>
+.input-field-container {
+  width: 100%;
+}
 
+.custom-input {
+  width: 100%;
+  height: 42px; /* Chiều cao chuẩn */
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1e293b; /* slate-800 */
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1; /* slate-300 */
+  border-radius: 4px; /* Bo góc 4px */
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.custom-input:focus {
+  border-color: #f97316; /* Màu cam focus */
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.custom-input::placeholder {
+  color: #94a3b8; /* slate-400 */
+}
+
+/* Trạng thái Lỗi */
+.has-error .custom-input {
+  border-color: #ef4444;
+}
+
+.has-error .custom-input:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.error-text {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 2px;
+}
 </style>
