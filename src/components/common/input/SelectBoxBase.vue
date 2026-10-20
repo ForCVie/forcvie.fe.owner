@@ -1,15 +1,14 @@
 <template>
   <div class="select-wrapper" :class="{ 'has-error': hasError }">
-    <!-- Label -->
     <label v-if="label" :for="elementId" class="select-label">
       {{ label }}
       <span v-if="isRequired" class="required-star">*</span>
     </label>
 
-    <!-- Trạng thái Disable -->
-    <span v-if="isDisable" class="is_disabled_text">{{ selectedLabel }}</span>
+    <span v-if="isDisable" class="is_disabled_text">
+      {{ selectedLabel }}
+    </span>
 
-    <!-- Select Box chính -->
     <div v-else class="select-field-container">
       <v-select
         :id="elementId"
@@ -28,7 +27,6 @@
         @close="onClose"
         class="custom-v-select"
       >
-        <!-- Icon mũi tên mở menu -->
         <template #open-indicator="{ attributes }">
           <svg
             v-bind="attributes"
@@ -46,7 +44,6 @@
           </svg>
         </template>
 
-        <!-- Trạng thái Không có dữ liệu hoặc Không tìm thấy kết quả search -->
         <template #no-options="{ search, searching }">
           <span v-if="searching" class="no-options-text">
             Không tìm thấy "<strong>{{ search }}</strong>"
@@ -55,20 +52,21 @@
         </template>
       </v-select>
 
-      <!-- Hidden Input phục vụ Store Check Required -->
+      <!-- Input ẩn để Store kiểm tra trường bắt buộc -->
       <input
-        :id="`${elementId}_check`"
+        :id="requiredFieldId"
         :value="hiddenInputValue"
+        type="text"
         hidden
         readonly
       />
     </div>
 
-    <!-- Thông báo lỗi -->
-    <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+    <span v-if="showMess && errorMessage" class="error-text">
+      {{ errorMessage }}
+    </span>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount, useAttrs } from 'vue'
 import VSelect from 'vue-select'
@@ -76,7 +74,6 @@ import 'vue-select/dist/vue-select.css'
 import { commonStore } from '@/stores/common'
 import type { CodeMngModel } from '@/stores/common/codeMng/codeMng.type'
 
-// 1. Props Definition
 interface Props {
   modelValue?: string | number | (string | number)[]
   label?: string
@@ -85,7 +82,8 @@ interface Props {
   isDisable?: boolean
   multiple?: boolean
   appendToBody?: boolean
-  searchable?: boolean // Prop bật/tắt search
+  searchable?: boolean
+  showMess?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -95,26 +93,35 @@ const props = withDefaults(defineProps<Props>(), {
   isDisable: false,
   multiple: false,
   appendToBody: false,
-  searchable: true // Mặc định BẬT Search Local
+  searchable: true,
+  showMess: true,
 })
 
-// 2. Emits
 const emit = defineEmits<{
   (e: 'update:modelValue', val: string | number | (string | number)[] | undefined): void
   (e: 'change', val: string | number | (string | number)[] | undefined): void
   (e: 'focusout'): void
 }>()
 
+defineOptions({ inheritAttrs: false })
+
 const attrs = useAttrs()
 const store = commonStore()
 
 const errorMessage = ref('')
+
+const elementId = computed(
+  () => (attrs.id as string) || `select-${Math.random().toString(36).substring(2, 9)}`
+)
+
+const requiredFieldId = computed(() => `${elementId.value}_check`)
+
+const isRequired = computed(
+  () => attrs.required !== undefined && attrs.required !== false
+)
+
 const hasError = computed(() => !!errorMessage.value)
 
-const elementId = computed(() => (attrs.id as string) || `select-${Math.random().toString(36).substring(2, 9)}`)
-const isRequired = computed(() => attrs.required !== undefined && attrs.required !== false)
-
-// Giá trị gán vào hidden input phục vụ logic validate cũ của Store
 const hiddenInputValue = computed(() => {
   if (Array.isArray(props.modelValue)) {
     return props.modelValue.join(',')
@@ -122,67 +129,79 @@ const hiddenInputValue = computed(() => {
   return props.modelValue ?? ''
 })
 
-// Label hiển thị khi bị disabled
 const selectedLabel = computed(() => {
   if (Array.isArray(props.modelValue)) {
-    if (!props.modelValue.length) return '---'
+    if (props.modelValue.length === 0) return '---'
+
     const names = props.data
-      ?.filter((item) => props.modelValue?.includes(item.cdId))
-      .map((item) => item.cdNm)
-    return names?.join(', ') || '---'
+      .filter(item => props.modelValue!.includes(item.cdId))
+      .map(item => item.cdNm)
+
+    return names.join(', ') || '---'
   }
-  const matched = props.data?.find((item) => item.cdId == props.modelValue)
+
+  const matched = props.data.find(item => item.cdId == props.modelValue)
   return matched ? matched.cdNm : props.modelValue || '---'
 })
 
-// Validation Logic
-const validate = (val: any) => {
+const validate = (
+  val: string | number | (string | number)[] | undefined
+) => {
   if (!isRequired.value) {
     errorMessage.value = ''
     return
   }
 
   if (Array.isArray(val)) {
-    if (val.length === 0) {
-      errorMessage.value = 'Vui lòng chọn ít nhất một lựa chọn'
-    } else {
-      errorMessage.value = ''
-    }
-  } else {
-    if (val === undefined || val === null || val === '') {
-      errorMessage.value = 'Vui lòng chọn trường này'
-    } else {
-      errorMessage.value = ''
-    }
+    errorMessage.value = val.length === 0
+      ? 'Vui lòng chọn ít nhất một lựa chọn'
+      : ''
+    return
   }
+
+  errorMessage.value =
+    val === undefined || val === null || val === ''
+      ? 'Vui lòng chọn trường này'
+      : ''
 }
 
-// Handlers
-const onValueChange = (val: any) => {
+const onValueChange = (
+  val: string | number | (string | number)[] | undefined
+) => {
   emit('update:modelValue', val)
   emit('change', val)
   validate(val)
 }
 
-const onOpen = () => validate(props.modelValue)
-const onClose = () => emit('focusout')
+const onOpen = () => {
+  validate(props.modelValue)
+}
 
-// Lifecycle & Store integration
-watch(() => props.modelValue, (newVal) => {
-  validate(newVal)
-  store.checkRequired()
-})
+const onClose = () => {
+  emit('focusout')
+}
 
+// Đồng bộ thông báo lỗi khi giá trị thay đổi.
+// Không gọi store.checkRequired() ở đây.
+watch(
+  () => props.modelValue,
+  newVal => {
+    validate(newVal)
+  },
+  { immediate: true }
+)
+
+// Chỉ đăng ký ID cho Store.
+// Việc kiểm tra tổng thể sẽ được thực hiện khi người dùng bấm Lưu.
 onMounted(() => {
-  if (isRequired.value && elementId.value) {
-    store.setRequired(`${elementId.value}_check`)
-    store.checkRequired()
+  if (isRequired.value) {
+    store.setRequired(requiredFieldId.value)
   }
 })
 
 onBeforeUnmount(() => {
-  if (isRequired.value && elementId.value) {
-    store.removeRequired(elementId.value)
+  if (isRequired.value) {
+    store.removeRequired(requiredFieldId.value)
   }
 })
 </script>

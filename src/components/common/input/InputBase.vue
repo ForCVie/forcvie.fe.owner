@@ -1,6 +1,9 @@
 <template>
-  <div class="input-wrapper" :class="{ 'has-error': errorMessage }">
-    <!-- Label Component -->
+  <div
+    class="input-wrapper"
+    :class="{ 'has-error': showMess && !!errorMessage }"
+  >
+    <!-- Label -->
     <label v-if="label" :for="inputId" class="input-label">
       {{ label }}
       <span v-if="isRequired" class="required-star">*</span>
@@ -12,16 +15,18 @@
         type="text"
         v-bind="attrs"
         :value="inputValue"
+        :placeholder="placeholder"
+        class="custom-input"
         @input="onInput"
         @blur="onBlur"
         @focus="onFocus"
-        class="custom-input"
-        :placeholder="placeholder"
       />
     </div>
 
-    <!-- Thông báo lỗi bên dưới input -->
-    <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+    <!-- Thông báo lỗi -->
+    <span v-if="showMess && errorMessage" class="error-text">
+      {{ errorMessage }}
+    </span>
   </div>
 </template>
 
@@ -33,154 +38,194 @@ import {
   useAttrs,
   onMounted,
   onBeforeUnmount,
-  onUpdated,
-} from "vue";
-import { commonStore } from "@/stores/common";
+} from 'vue'
 
-// 1. Props Definition
+import { commonStore } from '@/stores/common'
+
+defineOptions({
+  inheritAttrs: false,
+})
+
 interface Props {
-  modelValue: string | number;
-  label?: string;
-  placeholder?: string;
-  isNumber?: boolean;
-  minValue?: number;
-  maxValue?: number;
-  decimalPlaces?: number;
+  modelValue: string | number
+  label?: string
+  placeholder?: string
+  isNumber?: boolean
+  minValue?: number
+  maxValue?: number
+  decimalPlaces?: number
   id?: string
+  showMess?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: "",
-  label: "",
-  placeholder: "",
+  modelValue: '',
+  label: '',
+  placeholder: '',
   isNumber: false,
   decimalPlaces: 2,
-});
+  showMess: true,
+})
 
-// 2. Emits
 const emit = defineEmits<{
-  (e: "update:modelValue", value: string | number): void;
-  (e: "blur", event: FocusEvent): void;
-  (e: "focus", event: FocusEvent): void;
-}>();
+  (e: 'update:modelValue', value: string | number): void
+  (e: 'blur', event: FocusEvent): void
+  (e: 'focus', event: FocusEvent): void
+}>()
 
-const attrs = useAttrs();
-const store = commonStore();
+const attrs = useAttrs()
+const store = commonStore()
 
-// Tạo unique ID nếu không truyền id từ attrs
+// ID ổn định trong suốt vòng đời component
 const inputId = computed(
   () =>
-    (props.id as string) ||
+    props.id ||
+    (typeof attrs.id === 'string' ? attrs.id : '') ||
     `input-${Math.random().toString(36).substring(2, 9)}`,
-);
+)
+
 const isRequired = computed(
-  () => attrs.required !== undefined && attrs.required !== false,
-);
+  () => props.required !== false &&
+    attrs.required !== undefined &&
+    attrs.required !== false,
+)
 
-const errorMessage = ref("");
-let timeout: ReturnType<typeof setTimeout> | null = null;
-let stampValue = "";
+const errorMessage = ref('')
 
-// Dynamic Regex theo decimalPlaces
+let timeout: ReturnType<typeof setTimeout> | null = null
+let stampValue = ''
+
 const regex = computed(
   () => new RegExp(`^[0-9]*\\.?[0-9]{0,${props.decimalPlaces}}$`),
-);
+)
 
-// Synchronize Value với parent component
+// Binding hai chiều
 const inputValue = computed({
   get: () => props.modelValue,
-  set: (val) => emit("update:modelValue", val),
-});
+  set: (val: string | number) => emit('update:modelValue', val),
+})
 
-// 3. Input Handlers
+// Validate riêng input
+const validateInput = (val: unknown) => {
+  const isEmpty =
+    val === null ||
+    val === undefined ||
+    String(val).trim() === ''
+
+  errorMessage.value =
+    isRequired.value && isEmpty
+      ? 'Trường này là bắt buộc'
+      : ''
+}
+
+// Input handler
 const onInput = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  let val = target.value;
+  const target = event.target as HTMLInputElement
+  let val = target.value
 
   if (props.isNumber) {
     // Chỉ giữ lại số và dấu chấm
-    val = val.replace(/[^0-9.]/g, "");
+    val = val.replace(/[^0-9.]/g, '')
 
-    // Xử lý số 0 ở đầu (ví dụ: "05" -> "5", trừ "0.x")
-    if (val.length > 1 && val.startsWith("0") && !val.startsWith("0.")) {
-      val = val.replace(/^0+/, "");
+    // Chỉ cho phép một dấu chấm thập phân
+    const firstDot = val.indexOf('.')
+    if (firstDot !== -1) {
+      val =
+        val.substring(0, firstDot + 1) +
+        val.substring(firstDot + 1).replace(/\./g, '')
     }
 
-    // Xử lý số lượng chữ số thập phân
+    // Xử lý số 0 ở đầu
+    if (val.length > 1 && val.startsWith('0') && !val.startsWith('0.')) {
+      val = val.replace(/^0+/, '')
+    }
+
     if (regex.value.test(val)) {
-      stampValue = val;
+      stampValue = val
     } else {
-      val = stampValue;
+      val = stampValue
     }
 
-    // Tự động thêm '0' nếu bắt đầu bằng dấu chấm
-    if (val.startsWith(".")) {
-      val = "0" + val;
+    // Thêm 0 nếu bắt đầu bằng dấu chấm
+    if (val.startsWith('.')) {
+      val = '0' + val
     }
 
-    // Kiểm tra min/max
-    const numericValue = parseFloat(val);
+    // Kiểm tra min/max khi giá trị là số hoàn chỉnh
+    const numericValue = parseFloat(val)
+
     if (!isNaN(numericValue)) {
-      if (props.minValue !== undefined && numericValue < props.minValue) {
-        val = props.minValue.toString();
+      if (
+        props.minValue !== undefined &&
+        numericValue < props.minValue
+      ) {
+        val = props.minValue.toString()
       } else if (
         props.maxValue !== undefined &&
         numericValue > props.maxValue
       ) {
-        val = props.maxValue.toString();
+        val = props.maxValue.toString()
       }
     }
 
-    inputValue.value = val;
+    // Cập nhật ngay để tránh Save trước khi debounce chạy
+    inputValue.value = val
+    target.value = val
   } else {
-    // Debounce ngắn cho text thông thường
-    if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      inputValue.value = val;
-    }, 50);
+    // Xóa timeout cũ và cập nhật ngay model khi nhập
+    if (timeout) {
+      clearTimeout(timeout)
+      timeout = null
+    }
+
+    inputValue.value = val
   }
 
-  validateInput(val);
-};
+  validateInput(val)
+}
 
 const onBlur = (event: FocusEvent) => {
-  validateInput(inputValue.value.toString());
-  emit("blur", event);
-};
+  // Đảm bảo giá trị mới nhất đã được đồng bộ
+  if (timeout) {
+    clearTimeout(timeout)
+    timeout = null
+  }
+
+  validateInput(inputValue.value)
+  emit('blur', event)
+}
 
 const onFocus = (event: FocusEvent) => {
-  emit("focus", event);
-};
+  emit('focus', event)
+}
 
-// Validation logic
-const validateInput = (val: string) => {
-  if (isRequired.value && (!val || val.trim() === "")) {
-    errorMessage.value = "Trường này là bắt buộc";
-  } else {
-    errorMessage.value = "";
-  }
-};
+// Đồng bộ lỗi khi modelValue được truyền vào hoặc thay đổi từ bên ngoài
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    validateInput(newVal)
+  },
+  { immediate: true },
+)
 
-// 4. Lifecycle Hooks & Store Integration
+// Đăng ký các trường required
 onMounted(() => {
-  const id = inputId.value;
-  if (isRequired.value && id) {
-    store.setRequired(id);
+  if (isRequired.value && inputId.value) {
+    store.setRequired(inputId.value)
   }
-  store.checkRequired();
-});
+})
 
+// Gỡ đăng ký khi component bị hủy
 onBeforeUnmount(() => {
-  const id = inputId.value;
-  if (isRequired.value && id) {
-    store.removeRequired(id);
+  if (isRequired.value && inputId.value) {
+    store.removeRequired(inputId.value)
   }
-  if (timeout) clearTimeout(timeout);
-});
 
-onUpdated(() => {
-  store.checkRequired();
-});
+  if (timeout) {
+    clearTimeout(timeout)
+    timeout = null
+  }
+})
 </script>
 
 <style scoped>
@@ -190,29 +235,28 @@ onUpdated(() => {
 
 .custom-input {
   width: 100%;
-  height: 42px; /* Chiều cao chuẩn */
+  height: 42px;
   padding: 8px 12px;
   font-size: 14px;
   line-height: 1.5;
-  color: #1e293b; /* slate-800 */
+  color: #1e293b;
   background-color: #ffffff;
-  border: 1px solid #cbd5e1; /* slate-300 */
-  border-radius: 4px; /* Bo góc 4px */
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
   outline: none;
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
 .custom-input:focus {
-  border-color: #f97316; /* Màu cam focus */
+  border-color: #f97316;
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
 }
 
 .custom-input::placeholder {
-  color: #94a3b8; /* slate-400 */
+  color: #94a3b8;
 }
 
-/* Trạng thái Lỗi */
 .has-error .custom-input {
   border-color: #ef4444;
 }

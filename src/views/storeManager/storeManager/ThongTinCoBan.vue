@@ -102,7 +102,7 @@ const storeTypeOptions = [
 ];
 
 const handleSubmit = async () => {
-  if (store.check) {
+  if (store.checkRequired()) {
     alert(
       t("common.messageValidateRequired"),
       t("common.alertTitle"),

@@ -2,6 +2,7 @@
 import BaseDatePicker from "@/components/common/datepicker/BaseDatePicker.vue";
 import CheckboxBase from "@/components/common/input/CheckboxBase.vue";
 import InputBase from "@/components/common/input/InputBase.vue";
+import InputFileBase from "@/components/common/input/InputFileBase.vue";
 import ListCheckBoxBase from "@/components/common/input/ListCheckBoxBase.vue";
 import RadiobuttonBase from "@/components/common/input/RadiobuttonBase.vue";
 import BaseStepper from "@/components/common/step/BaseStepper.vue";
@@ -56,6 +57,16 @@ const categoryList = [
 ];
 const handleFinish = () => {
   console.log("Hoàn tất tạo cửa hàng");
+};
+
+const fileUploadRef = ref(null);
+
+const handleUpload = async () => {
+  const referKeyId = 12345;
+
+  const result = await fileUploadRef.value?.uploadFile(referKeyId);
+
+  console.log("Kết quả upload:", result);
 };
 </script>
 
@@ -124,18 +135,17 @@ const handleFinish = () => {
             </div>
           </div>
           <div>
-              <ListCheckBoxBase
-                v-model="formData.selectedCategories"
-                label="Thể loại bài viết"
-                :list-data="categoryList"
-                has-check-all
-                :is-require="true"
-                require-id="user_skills"
-                check-all-label="Chọn tất cả"
-              />
+            <ListCheckBoxBase
+              v-model="formData.selectedCategories"
+              label="Thể loại bài viết"
+              :list-data="categoryList"
+              has-check-all
+              :is-require="true"
+              require-id="user_skills"
+              check-all-label="Chọn tất cả"
+            />
           </div>
-          <div>
-          </div>
+          <div></div>
           <div>
             <!-- Tải 1 ảnh (Single Image) -->
             <InputFileBase
@@ -161,7 +171,9 @@ const handleFinish = () => {
               :maxFile="5"
               :type="FILE_TYPE_OFFICE"
               :mode="currentMode"
+              ref="fileUploadRef"
             />
+            <button @click="handleUpload">Upload</button>
           </div>
           <!-- Textarea -->
           <div class="sm:col-span-2">

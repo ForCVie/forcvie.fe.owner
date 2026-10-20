@@ -45,31 +45,31 @@ import { ref, computed, watch, onBeforeMount } from 'vue';
 
 // --- Giả lập Store và Data mẫu (Cấu trúc 2 cấp) ---
 // CHÚ Ý: Bạn cần thay thế phần này bằng store và API thực tế của mình.
-const mockData = [
-    {
-        id: 'HN', name: 'Thành phố Hà Nội', wards: [
-            { id: 'HN-CV', name: 'Phường Cống Vị' },
-            { id: 'HN-BT', name: 'Phường Bách Thảo' },
-            { id: 'HN-NV', name: 'Phường Nghĩa Vĩ' },
-            { id: 'HN-QD', name: 'Phường Quan Đôi' }
-        ]
-    },
-    {
-        id: 'HCM', name: 'Thành phố Hồ Chí Minh', wards: [
-            { id: 'HCM-BT', name: 'Phường Bến Thành' },
-            { id: 'HCM-CV', name: 'Phường Cô Giang' },
-            { id: 'HCM-AL', name: 'Phường An Lạc' },
-            { id: 'HCM-BHH', name: 'Phường Bình Hưng Hòa' }
-        ]
-    },
-];
+// const mockData = [
+//     {
+//         id: 'HN', name: 'Thành phố Hà Nội', wards: [
+//             { id: 'HN-CV', name: 'Phường Cống Vị' },
+//             { id: 'HN-BT', name: 'Phường Bách Thảo' },
+//             { id: 'HN-NV', name: 'Phường Nghĩa Vĩ' },
+//             { id: 'HN-QD', name: 'Phường Quan Đôi' }
+//         ]
+//     },
+//     {
+//         id: 'HCM', name: 'Thành phố Hồ Chí Minh', wards: [
+//             { id: 'HCM-BT', name: 'Phường Bến Thành' },
+//             { id: 'HCM-CV', name: 'Phường Cô Giang' },
+//             { id: 'HCM-AL', name: 'Phường An Lạc' },
+//             { id: 'HCM-BHH', name: 'Phường Bình Hưng Hòa' }
+//         ]
+//     },
+// ];
 const store = locationStore();
 const provinces = ref([]);
 
 onBeforeMount(async () => {
-    // await store.getProvinces(); // API call thực tế
-    // provinces.value = store.provinces.data; // Lấy data thực tế
-    provinces.value = mockData; // Dùng data mẫu
+    await store.getProvinces(); // API call thực tế
+    provinces.value = store.provinces.data; // Lấy data thực tế
+    // provinces.value = mockData; // Dùng data mẫu
 
     // Khởi tạo modelValue sau khi có dữ liệu
     if (props.modelValue) {

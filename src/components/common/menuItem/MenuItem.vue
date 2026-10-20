@@ -9,12 +9,22 @@
           v-model="selectedMenuItems"
           @change="updateSelectedMenu(item.cdId)"
         />
+        <span class="mr-2">Chức năng</span>
+        
+        <CheckboxBase v-for="detail in item.menuDetil" :key="detail.cdId"
+          :id="`${detail.cdId}`"
+          :value="`${detail.cdId}`"
+          :label="`${detail.cdNm}`"
+          v-model="selectedMenuDetails"
+          @change="updateSelectedMenuDetail(detail.cdId)"
+        />
       </p>
       <MenuItem
         v-if="item.subMenus"
         :items="item.subMenus"
         :listData="listData"
         v-model:selectMenu="selectedMenuItems"
+        v-model:menuDetil="selectedMenuDetails"
       />
     </li>
   </ul>
@@ -23,15 +33,19 @@
 <script setup lang="ts">
 import { CodeMngModel } from "@/stores/common/codeMng/codeMng.type";
 import { defineProps } from "vue";
+import ListCheckBoxBase from "../input/ListCheckBoxBase.vue";
+import { s } from "vitest/dist/types-63abf2e0";
 
 const props = defineProps<{
   items: Array<CodeMngModel>;
   listData: Array<CodeMngModel>;
   selectMenu: String[];
+  menuDetil: String[];
 }>();
-const emit = defineEmits(["update:selectMenu"]);
+const emit = defineEmits(["update:selectMenu", "update:menuDetil"]);
 
 const selectedMenuItems = props.selectMenu;
+const selectedMenuDetails = props.menuDetil;
 
 function buildMenu(arr: any, parentId = "") {
   return arr
@@ -40,6 +54,20 @@ function buildMenu(arr: any, parentId = "") {
       ...item,
       subMenus: buildMenu(arr, item.cdId)
     }));
+}
+
+function updateSelectedMenuDetail(newSelectedMenu:string) {
+  console.log(selectedMenuDetails);
+  
+  const index = selectedMenuDetails.indexOf(newSelectedMenu);
+
+  if (index > -1) {
+    selectedMenuDetails.splice(index, 1);
+  } else {
+    selectedMenuDetails.push(newSelectedMenu);
+  }
+
+  emit("update:menuDetil", selectedMenuDetails);
 }
 
 function addAllSubMenus(menuId:any, listMenu:any) {

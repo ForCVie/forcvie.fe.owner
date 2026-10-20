@@ -13,45 +13,27 @@ export const commonStore = defineStore('common', () => {
   }
   const setRequired = async (id:string) => {
     arrRequired.value.push(id)
-    await checkRequired()
   }
   const removeRequired = async (id: string) => {
     arrRequired.value = arrRequired.value.filter((vId: string) => vId !== id)
-    await checkRequired()
     return arrRequired.value
   }
 
-  const checkRequired = () => {
-    let arr = []
+  const checkRequired = (): boolean => {
+    for (const id of arrRequired.value) {
+      const inputElement = document.getElementById(id) as HTMLInputElement | null;
 
-    arrRequired.value.forEach(id => {
-      const inputElement = document.getElementById(id);
-      if (inputElement) {
-        arr = [...arr, {
-          id: id,
-          count: inputElement.value.length,
-          value : inputElement.value
-        }]
+      if (!inputElement) continue;
+
+      const value = inputElement.value?.trim() ?? '';
+
+      if (value.length === 0 || value === '선택') {
+        return true; // Có trường chưa nhập
       }
-    });
-
-    const existNull = arr.some(item => item.count === 0 || item.value == '선택');
-
-    if (existNull) {
-      check.value = true
-    } else {
-      check.value = false
     }
-    // if(check.value){
-    //   Swal.fire({
-    //     title: "Are you sure?",
-    //     text: "you want to Cancel Operation!",
-    //     showCancelButton: false,
-    //     showConfirmButton:false,
-    //     icon: "error",
-    //   })
-    // }
-  }
+
+    return false; // Tất cả hợp lệ
+  };
 
   const fn_viewer_open = (formName: any, _datasetList: any, _paramList: any) =>{
     var _params = {

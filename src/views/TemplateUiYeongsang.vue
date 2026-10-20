@@ -2075,7 +2075,6 @@ import SelectBoxBaseSearch from "@/components/common/input/SelectBoxBaseSearch.v
 import SelectBoxBase from "@/components/common/input/SelectBoxBase.vue";
 import RadiobuttonBase from "@/components/common/input/RadiobuttonBase.vue";
 import CheckboxBase from "@/components/common/input/CheckboxBase.vue";
-import TextAreaBase from "@/components/common/input/TextAreaBase.vue";
 import InputTextBase from "@/components/common/input/InputTextBase.vue";
 import TModal from "@/components/common/modal/TModal.vue";
 import {ref} from "vue";
@@ -2590,7 +2589,6 @@ export default defineComponent({
     THeader,
     TModal,
     InputTextBase,
-    TextAreaBase,
     CheckboxBase,
     RadiobuttonBase,
     SelectBoxBase,

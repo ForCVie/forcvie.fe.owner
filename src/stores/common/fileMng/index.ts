@@ -15,6 +15,8 @@ export const fileMngStore = defineStore('fileMng', () => {
             dataFileUpload.value = response.data.data
             status.value = response.status
         } catch (error) {
+            console.log(error);
+            
             console.log('API 호출 시 오류가 있습니다')
         }
     }

@@ -1,12 +1,10 @@
 <template>
   <div class="textarea-wrapper" :class="{ 'has-error': hasError }">
-    <!-- 1. Label tích hợp -->
     <label v-if="label" :for="elementId" class="textarea-label">
       {{ label }}
       <span v-if="isRequired" class="required-star">*</span>
     </label>
 
-    <!-- 2. Textarea Field -->
     <div class="textarea-field-container">
       <textarea
         :id="elementId"
@@ -22,8 +20,9 @@
       />
     </div>
 
-    <!-- 3. Thông báo lỗi -->
-    <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+    <span v-if="showMess && errorMessage" class="error-text">
+      {{ errorMessage }}
+    </span>
   </div>
 </template>
 
@@ -38,6 +37,7 @@ interface Props {
   placeholder?: string
   rows?: number | string
   resizeAuto?: boolean
+  showMess?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -45,7 +45,8 @@ const props = withDefaults(defineProps<Props>(), {
   label: '',
   placeholder: '',
   rows: 4,
-  resizeAuto: false
+  resizeAuto: false,
+  showMess: true
 })
 
 // 2. Emits

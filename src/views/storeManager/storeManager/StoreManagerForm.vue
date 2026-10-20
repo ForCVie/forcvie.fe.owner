@@ -2,6 +2,8 @@
 import BaseStepper from '@/components/common/step/BaseStepper.vue';
 import { ref } from 'vue'
 import ThongTinCoBan from './ThongTinCoBan.vue';
+import ThoiGianHoatDong from './ThoiGianHoatDong.vue';
+import VerifyEmail from './VerifyEmail.vue';
 
 const currentStep = ref(0)
 const steps = [
@@ -40,30 +42,21 @@ const formData = ref({
 
     <!-- Step 2 -->
     <template #step-1="{ next, previous, totalSteps }">
-      <!-- <StepAddress
+      <ThoiGianHoatDong
         :is-first-step="currentStep === 0"
         :is-last-step="currentStep === totalSteps - 1"
         @next="next"
         @back="previous"
-      /> -->
-      <input
-          type="text"
-          class="step-2"
-          placeholder="Ví dụ: Cửa hàng ABC"
-        />
+      />
     </template>
     <!-- Step 2 -->
     <template #step-2="{ next, previous, totalSteps }">
-      <!-- <StepAddress
+      <VerifyEmail
         :is-first-step="currentStep === 0"
         :is-last-step="currentStep === totalSteps - 1"
         @next="next"
         @back="previous"
-      /> -->
-      <input
-          type="text"
-          placeholder="Ví dụ: Cửa hàng ABC"
-        />
+      />
     </template>
   </BaseStepper>
   </section>

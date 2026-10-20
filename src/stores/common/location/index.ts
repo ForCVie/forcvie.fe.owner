@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { CodeMngModel } from "../codeMng/codeMng.type";
-import { getListCountries, getListProvinces, getListProvincesOld } from "./location.service";
+import { getListCountries, getListProvinces } from "./location.service";
 import type { ProvincesDTO, ProvincesOldDTO } from "./location.type";
 export const locationStore = defineStore("location", () => {
     const countries = ref<CodeMngModel[]>();
@@ -21,20 +21,11 @@ export const locationStore = defineStore("location", () => {
         status.value = response.status;
     };
 
-    const provincesOld = ref<ProvincesOldDTO[]>();
-    const getProvincesOld = async () => {
-        const response = await getListProvincesOld();
-        provincesOld.value = response.data;
-        status.value = response.status;
-    };
-
     return {
         countries,
         status,
         getcountries,
         provinces,
-        getProvinces,
-        provincesOld,
-        getProvincesOld,
+        getProvinces
     };
 });

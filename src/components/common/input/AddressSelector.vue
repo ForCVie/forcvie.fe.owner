@@ -55,8 +55,6 @@ const provinces = ref([]);
 
 // --- Data Fetching (Giữ nguyên) ---
 onBeforeMount(async () =>{
-    await store.getProvincesOld();
-    provinces.value = store.provincesOld.data;
     
     if (props.modelValue) {
         initializeSelection(props.modelValue);

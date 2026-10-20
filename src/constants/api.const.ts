@@ -4,3 +4,7 @@ export const GET_FILE_INFO_CMN = "GET_FILE_INFO_CMN";
 export const DOWNLOAD_FILE_CMN = "DOWNLOAD_FILE_CMN";
 export const DELETE_FILE_CMN = "DELETE_FILE_CMN";
 export const LOGIN_LDAP_CLIENT = "LOGIN_LDAP_CLIENT";
+export const GET_BY_CODE = "GET_BY_CODE";
+export const GET_BY_LIST_CODE = "GET_BY_LIST_CODE";
+export const GET_COUNTRIES = "GET_COUNTRIES";
+export const GET_PROVINCES = "GET_PROVINCES";

@@ -1,291 +1,271 @@
 <template>
   <!-- Layout Container chuẩn -->
   <div class="flex-1 flex flex-col h-full overflow-y-auto relative w-full bg-[#f4f7f9] p-6 pb-14">
-    <!-- Header Form mở rộng -->
-    <div class="max-w-5xl mx-auto w-full mb-6">
-      <h1 class="text-3xl font-bold text-gray-800">Đăng ký tài khoản</h1>
-      <p class="text-base text-gray-500 mt-1.5">Vui lòng điền đầy đủ thông tin bên dưới để tạo tài khoản mới.</p>
-    </div>
-
-    <!-- Form Main Content (Nâng kích thước max-w-5xl & padding p-8) -->
-    <form @submit.prevent="handleSubmit" class="max-w-5xl mx-auto w-full bg-white p-8 rounded-[4px] shadow-sm border border-gray-100 flex flex-col gap-6">
-      
-      <!-- Khối 1: Thông tin cá nhân cơ bản (3 cột) -->
-      <div>
-        <h2 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Thông tin cá nhân</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <!-- Họ và tên -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-gray-700">Họ và tên <span class="text-red-500">*</span></label>
-            <InputBase
-              v-model="formData.fullName"
-              placeholder="Nhập họ và tên"
-              class="h-[42px] rounded-[4px]"
-              :error="errors.fullName"
-            />
-          </div>
-
-          <!-- Ngày sinh -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-gray-700">Ngày sinh</label>
-            <DatePickerBase
-              v-model="formData.dob"
-              placeholder="Chọn ngày sinh"
-              class="h-[42px] rounded-[4px]"
-            />
-          </div>
-
-          <!-- Giới tính -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-gray-700">Giới tính</label>
-            <div class="flex items-center gap-6 h-[42px]">
-              <RadioBoxBase
-                v-for="gender in genderOptions"
-                :key="gender.value"
-                v-model="formData.gender"
-                :value="gender.value"
-                :label="gender.label"
-                name="gender"
-              />
+    
+        <!-- Content Area -->
+        <main class="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+            
+            <!-- Global Stats / Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-2xl">
+                        <i class="ph-fill ph-storefront"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Tổng cửa hàng</p>
+                        <h3 class="text-2xl font-bold text-gray-900">3 <span class="text-sm font-normal text-gray-500">chi nhánh</span></h3>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-green-50 text-green-500 flex items-center justify-center text-2xl">
+                        <i class="ph-fill ph-money"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Doanh thu hôm nay (Toàn HT)</p>
+                        <h3 class="text-2xl font-bold text-gray-900">45.2M <span class="text-sm font-normal text-gray-500">VNĐ</span></h3>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center text-2xl">
+                        <i class="ph-fill ph-users"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">Đang phục vụ</p>
+                        <h3 class="text-2xl font-bold text-gray-900">18 <span class="text-sm font-normal text-gray-500">bàn</span></h3>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Khối 2: Liên hệ & Tài khoản (3 cột) -->
-      <div>
-        <h2 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Liên hệ & Tài khoản</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-gray-700">Địa chỉ Email <span class="text-red-500">*</span></label>
-            <InputBase
-              v-model="formData.email"
-              type="email"
-              placeholder="example@domain.com"
-              class="h-[42px] rounded-[4px]"
-              :error="errors.email"
-            />
-          </div>
+            <!-- Toolbar (Search & Filter) -->
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
+                <div class="relative w-full md:w-96">
+                    <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
+                    <input type="text" placeholder="Tìm kiếm tên, địa chỉ cửa hàng..." class="w-full bg-white border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 rounded-xl py-2.5 pl-11 pr-4 text-sm outline-none transition-all shadow-sm">
+                </div>
+                <div class="flex gap-2">
+                    
+                    <ButtonBase
+                        type="button"
+                        class="button primary"
+                        @click="goActionCreate"
+                        :button-name="'Thêm cửa hàng'"
+                    />
+                    <select class="bg-white border border-gray-200 rounded-xl py-2.5 px-4 text-sm font-medium outline-none hover:bg-gray-50 focus:border-orange-500">
+                        <option>Tất cả trạng thái</option>
+                        <option>Đang hoạt động</option>
+                        <option>Đang thiết lập</option>
+                        <option>Tạm đóng cửa</option>
+                    </select>
+                </div>
+            </div>
 
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-gray-700">Số điện thoại <span class="text-red-500">*</span></label>
-            <InputBase
-              v-model="formData.phone"
-              placeholder="Nhập số điện thoại"
-              class="h-[42px] rounded-[4px]"
-              :error="errors.phone"
-            />
-          </div>
+            <!-- Stores Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                
+                <!-- Store Card 1 (Active) -->
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:border-orange-300 transition-all flex flex-col overflow-hidden">
+                    <div class="h-32 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80');">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <div class="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full border border-green-400 shadow-sm flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Đang hoạt động
+                        </div>
+                        <div class="absolute bottom-3 left-4 flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-white p-1 shadow-md">
+                                <img src="https://ui-avatars.com/api/?name=El+Gaucho&background=ff5c00&color=fff&rounded=true&bold=true" class="w-full h-full rounded-lg">
+                            </div>
+                            <h2 class="text-xl font-bold text-white drop-shadow-md">El Gaucho - Hai Bà Trưng</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="flex items-start gap-2 text-sm text-gray-500 mb-5">
+                            <i class="ph ph-map-pin text-lg text-gray-400 shrink-0"></i>
+                            <p class="line-clamp-2">74/1 Hai Bà Trưng, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
+                        </div>
+                        
+                        <!-- Quick Stats -->
+                        <div class="grid grid-cols-2 gap-3 mb-6 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Doanh thu (Hôm nay)</p>
+                                <p class="font-bold text-gray-900">32.500.000đ</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Bàn đang phục vụ</p>
+                                <p class="font-bold text-gray-900">12 / 45 bàn</p>
+                            </div>
+                        </div>
 
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-gray-700">Loại tài khoản</label>
-            <SelectBoxBase
-              v-model="formData.accountType"
-              :options="accountTypeOptions"
-              placeholder="Chọn loại tài khoản"
-              class="h-[42px] rounded-[4px]"
-            />
-          </div>
-        </div>
-      </div>
+                        <div class="mt-auto flex gap-3">
+                            <ButtonBase
+                                type="button"
+                                class="button primary flex-1 flex items-center justify-center gap-2"
+                                @click="goActionCreate"
+                            > 
+                                <i class="ph ph-sign-in"></i> Vào quản trị
+                            </ButtonBase>
+                            <button class="w-11 h-11 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 flex items-center justify-center transition-colors">
+                                <i class="ph ph-gear text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Khối 3: Mật khẩu & File đại diện -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-gray-700">Mật khẩu <span class="text-red-500">*</span></label>
-          <InputBase
-            v-model="formData.password"
-            type="password"
-            placeholder="Nhập mật khẩu"
-            class="h-[42px] rounded-[4px]"
-            :error="errors.password"
-          />
-        </div>
+                <!-- Store Card 2 (Active) -->
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:border-orange-300 transition-all flex flex-col overflow-hidden">
+                    <div class="h-32 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80');">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <div class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full border border-red-400 shadow-sm flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Ngừng hoạt động
+                        </div>
+                        <div class="absolute bottom-3 left-4 flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-white p-1 shadow-md">
+                                <img src="https://ui-avatars.com/api/?name=El+Gaucho&background=ff5c00&color=fff&rounded=true&bold=true" class="w-full h-full rounded-lg">
+                            </div>
+                            <h2 class="text-xl font-bold text-white drop-shadow-md">El Gaucho - Thảo Điền</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="flex items-start gap-2 text-sm text-gray-500 mb-5">
+                            <i class="ph ph-map-pin text-lg text-gray-400 shrink-0"></i>
+                            <p class="line-clamp-2">Lô 8, Đường Xuân Thủy, Phường Thảo Điền, Quận 2, TP. Thủ Đức</p>
+                        </div>
+                        
+                        <!-- Quick Stats -->
+                        <div class="grid grid-cols-2 gap-3 mb-6 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Doanh thu (Hôm nay)</p>
+                                <p class="font-bold text-gray-900">12.700.000đ</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Bàn đang phục vụ</p>
+                                <p class="font-bold text-gray-900">6 / 30 bàn</p>
+                            </div>
+                        </div>
 
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-gray-700">Xác nhận mật khẩu <span class="text-red-500">*</span></label>
-          <InputBase
-            v-model="formData.confirmPassword"
-            type="password"
-            placeholder="Nhập lại mật khẩu"
-            class="h-[42px] rounded-[4px]"
-            :error="errors.confirmPassword"
-          />
-        </div>
+                        <div class="mt-auto flex gap-3">
+                            <ButtonBase
+                                type="button"
+                                class="button primary flex-1 flex items-center justify-center gap-2"
+                                @click="goActionCreate"
+                            > 
+                                <i class="ph ph-sign-in"></i> Vào quản trị
+                            </ButtonBase>
+                            <button class="w-11 h-11 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 flex items-center justify-center transition-colors">
+                                <i class="ph ph-gear text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-gray-700">Ảnh đại diện</label>
-          <InputFileBase
-            v-model="formData.avatar"
-            accept="image/*"
-            class="h-[42px] rounded-[4px]"
-          />
-        </div>
-      </div>
+                <!-- Store Card 2 (Active) -->
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:border-orange-300 transition-all flex flex-col overflow-hidden">
+                    <div class="h-32 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80');">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <div class="absolute top-3 right-3 bg-yellow-500 text-white text-xs font-bold px-2.5 py-1 rounded-full border border-yellow-400 shadow-sm flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Tạm đóng cửa
+                        </div>
+                        <div class="absolute bottom-3 left-4 flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-white p-1 shadow-md">
+                                <img src="https://ui-avatars.com/api/?name=El+Gaucho&background=ff5c00&color=fff&rounded=true&bold=true" class="w-full h-full rounded-lg">
+                            </div>
+                            <h2 class="text-xl font-bold text-white drop-shadow-md">El Gaucho - Thảo Điền</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="flex items-start gap-2 text-sm text-gray-500 mb-5">
+                            <i class="ph ph-map-pin text-lg text-gray-400 shrink-0"></i>
+                            <p class="line-clamp-2">Lô 8, Đường Xuân Thủy, Phường Thảo Điền, Quận 2, TP. Thủ Đức</p>
+                        </div>
+                        
+                        <!-- Quick Stats -->
+                        <div class="grid grid-cols-2 gap-3 mb-6 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Doanh thu (Hôm nay)</p>
+                                <p class="font-bold text-gray-900">12.700.000đ</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Bàn đang phục vụ</p>
+                                <p class="font-bold text-gray-900">6 / 30 bàn</p>
+                            </div>
+                        </div>
 
-      <!-- Khối 4: Chi tiết bổ sung -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-        <!-- Lĩnh vực quan tâm -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-gray-700">Lĩnh vực quan tâm</label>
-          <ListCheckBoxBase
-            v-model="formData.interests"
-            checkAllLabel="Chọn tất cả lĩnh vực"
-            :listData="interestOptions"
-          />
-        </div>
+                        <div class="mt-auto flex gap-3">
+                            <ButtonBase
+                                type="button"
+                                class="button primary flex-1 flex items-center justify-center gap-2"
+                                @click="goActionCreate"
+                            > 
+                                <i class="ph ph-sign-in"></i> Vào quản trị
+                            </ButtonBase>
+                            <button class="w-11 h-11 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 flex items-center justify-center transition-colors">
+                                <i class="ph ph-gear text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Store Card 3 (Setup/Inactive) -->
+                <div class="bg-white rounded-2xl border border-dashed border-gray-300 shadow-sm hover:shadow-md hover:border-gray-400 transition-all flex flex-col overflow-hidden opacity-80">
+                    <div class="h-32 bg-gray-100 flex items-center justify-center relative">
+                        <i class="ph ph-storefront text-4xl text-gray-300"></i>
+                        <div class="absolute top-3 right-3 bg-gray-500 text-white text-xs font-bold px-2.5 py-1 rounded-full border border-gray-400 shadow-sm flex items-center gap-1.5">
+                            <i class="ph ph-wrench"></i> Đang thiết lập
+                        </div>
+                        <div class="absolute bottom-3 left-4 flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-white border border-gray-200 p-1 shadow-sm opacity-50">
+                                <img src="https://ui-avatars.com/api/?name=El+Gaucho&background=9ca3af&color=fff&rounded=true&bold=true" class="w-full h-full rounded-lg grayscale">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5 flex-1 flex flex-col">
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">El Gaucho - Hà Nội</h2>
+                        <div class="flex items-start gap-2 text-sm text-gray-500 mb-5">
+                            <i class="ph ph-map-pin text-lg text-gray-400 shrink-0"></i>
+                            <p class="line-clamp-2">11 Tràng Thi, Phường Tràng Tiền, Quận Hoàn Kiếm, Hà Nội</p>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mb-6">
+                            <div class="flex justify-between text-xs font-medium text-gray-500 mb-2">
+                                <span>Tiến độ thiết lập</span>
+                                <span>60%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2">
+                                <div class="bg-gray-400 h-2 rounded-full" style="width: 60%"></div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2 italic">* Cần hoàn thiện menu và sơ đồ bàn</p>
+                        </div>
 
-        <!-- Giới thiệu bản thân -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-gray-700">Giới thiệu bản thân</label>
-          <TextArea
-            v-model="formData.bio"
-            placeholder="Viết một vài dòng giới thiệu ngắn gọn..."
-            :rows="4"
-            class="rounded-[4px]"
-          />
-        </div>
-      </div>
+                        <div class="mt-auto flex gap-3">
+                            <button @click="goAction('id')" class="flex-1 bg-gray-900 text-white font-medium py-2.5 rounded-xl hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+                                <i class="ph ph-wrench"></i> Tiếp tục thiết lập
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Điều khoản & Quy định -->
-      <div class="flex flex-col gap-1 mt-2">
-        <CheckBoxBase
-          v-model="formData.agreeTerms"
-          label="Tôi đồng ý với các Điều khoản dịch vụ và Chính sách bảo mật."
-        />
-        <span v-if="errors.agreeTerms" class="text-xs text-red-500">{{ errors.agreeTerms }}</span>
-      </div>
+            </div>
 
-      <!-- Action Button -->
-      <div class="flex items-center justify-end gap-3 mt-4 pt-5 border-t border-gray-100">
-        <button
-          type="button"
-          @click="handleReset"
-          class="h-[42px] px-6 rounded-[4px] border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-        >
-          Làm mới
-        </button>
-        <button
-          type="submit"
-          class="h-[42px] px-8 rounded-[4px] bg-orange-500 text-white font-medium hover:bg-orange-600 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-        >
-          Đăng ký tài khoản
-        </button>
-      </div>
-
-    </form>
+        </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import router from '@/router';
+import { storeManagerRoute } from '@/router/routeItems/storeManagerRoute';
 
-interface RegisterForm {
-  fullName: string
-  dob: string
-  gender: string
-  email: string
-  phone: string
-  accountType: string
-  avatar: File | null
-  password: string
-  confirmPassword: string
-  interests: (string | number)[]
-  bio: string
-  agreeTerms: boolean
-}
 
-const formData = reactive<RegisterForm>({
-  fullName: '',
-  dob: '',
-  gender: 'male',
-  email: '',
-  phone: '',
-  accountType: '',
-  avatar: null,
-  password: '',
-  confirmPassword: '',
-  interests: [],
-  bio: '',
-  agreeTerms: false
-})
+const goActionCreate = () => {
+  router.push({ name: storeManagerRoute.storeManagerForm.name });
+};
 
-const errors = reactive<Record<string, string>>({})
+const goAction = (item: string) => {
+  router.push({
+    name: storeManagerRoute.storeManagerForm.name,
+    state: { id: item },
+  });
+};
 
-const genderOptions = [
-  { label: 'Nam', value: 'male' },
-  { label: 'Nữ', value: 'female' },
-  { label: 'Khác', value: 'other' }
-]
-
-const accountTypeOptions = [
-  { label: 'Cá nhân', value: 'personal' },
-  { label: 'Doanh nghiệp', value: 'business' },
-  { label: 'Đối tác / Đại lý', value: 'partner' }
-]
-
-const interestOptions = [
-  { id: 'tech', name: 'Công nghệ & Phần mềm' },
-  { id: 'design', name: 'Thiết kế & Đồ họa' },
-  { id: 'marketing', name: 'Marketing & Truyền thông' },
-  { id: 'finance', name: 'Tài chính & Đầu tư' }
-]
-
-const handleSubmit = () => {
-  Object.keys(errors).forEach(key => delete errors[key])
-
-  let isValid = true
-
-  if (!formData.fullName.trim()) {
-    errors.fullName = 'Vui lòng nhập họ và tên'
-    isValid = false
-  }
-
-  if (!formData.email.trim()) {
-    errors.email = 'Vui lòng nhập địa chỉ email'
-    isValid = false
-  }
-
-  if (!formData.phone.trim()) {
-    errors.phone = 'Vui lòng nhập số điện thoại'
-    isValid = false
-  }
-
-  if (!formData.password) {
-    errors.password = 'Vui lòng nhập mật khẩu'
-    isValid = false
-  }
-
-  if (formData.password !== formData.confirmPassword) {
-    errors.confirmPassword = 'Mật khẩu xác nhận không khớp'
-    isValid = false
-  }
-
-  if (!formData.agreeTerms) {
-    errors.agreeTerms = 'Bạn cần đồng ý với điều khoản dịch vụ'
-    isValid = false
-  }
-
-  if (isValid) {
-    console.log('Form Submit Data:', formData)
-    alert('Đăng ký tài khoản thành công!')
-  }
-}
-
-const handleReset = () => {
-  formData.fullName = ''
-  formData.dob = ''
-  formData.gender = 'male'
-  formData.email = ''
-  formData.phone = ''
-  formData.accountType = ''
-  formData.avatar = null
-  formData.password = ''
-  formData.confirmPassword = ''
-  formData.interests = []
-  formData.bio = ''
-  formData.agreeTerms = false
-
-  Object.keys(errors).forEach(key => delete errors[key])
-}
 </script>
