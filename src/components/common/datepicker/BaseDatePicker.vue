@@ -1,4 +1,3 @@
-```vue
 <template>
   <div class="flex flex-col gap-1.5 w-full" :class="{ 'has-error': isError }">
     <!-- Label -->
@@ -247,4 +246,3 @@ onBeforeUnmount(() => {
   margin-top: 2px;
 }
 </style>
-```

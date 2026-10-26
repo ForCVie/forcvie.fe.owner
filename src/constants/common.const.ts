@@ -31,3 +31,6 @@ export const CD_ID_NOTICE_TOP = "10511";
 export const UP_CD_NOTICE_POST_CD = "10520";
 export const CD_ID_NOTICE_POST = "10521";
 
+export const NOTICE_SUCCESS = "success";
+export const NOTICE_WARNING = "warning";
+export const NOTICE_ERROR = "error";

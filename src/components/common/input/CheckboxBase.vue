@@ -26,7 +26,6 @@
     />
     
     <label 
-      v-if="label" 
       :for="elementId" 
       class="text-sm font-medium text-gray-700 select-none cursor-pointer disabled:cursor-not-allowed"
     >

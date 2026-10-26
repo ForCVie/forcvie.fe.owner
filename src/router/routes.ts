@@ -15,7 +15,7 @@ const getRouteItems = (route: any) => {
   return Object.values(route).map((screen:any) => ({
     path: screen.path,
     name: screen.name,
-    component: screen.component,
+    component: () => screen.component,
   }))
 }
 
@@ -38,6 +38,11 @@ export const routes = [
         path: '/template-dang-ky',
         name: 'templateDangKy',
         component: getView('Template_FormDangKy')
+      },
+      {
+        path: '/template-grid',
+        name: 'templateGrid',
+        component: getView('Template_Grid')
       },
       ...getRouteItems(storeManagerRoute),
       ...getRouteItems(storeOrderRoute),

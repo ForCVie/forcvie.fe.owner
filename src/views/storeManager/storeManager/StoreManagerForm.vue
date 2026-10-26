@@ -8,8 +8,8 @@ import VerifyEmail from './VerifyEmail.vue';
 const currentStep = ref(0)
 const steps = [
   { title: 'Thông tin cửa hàng' },
-  { title: 'Địa chỉ cửa hàng' },
-  { title: 'Thời gian hoạt động' }
+  { title: 'Thời gian hoạt động' },
+  { title: 'Xác nhận thông tin' }
 ];
 
 const formData = ref({

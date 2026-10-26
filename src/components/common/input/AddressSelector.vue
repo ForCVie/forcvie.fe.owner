@@ -193,8 +193,6 @@ const resetSelection = () => {
 };
 </script>
 
----
-
 <style scoped>
 :root {
     --primary: #0b74e5;
